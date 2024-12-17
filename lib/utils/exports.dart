@@ -6,7 +6,6 @@ export 'package:cloud_firestore/cloud_firestore.dart';
 export 'dart:convert';
 export 'dart:typed_data';
 export 'package:firebase_auth/firebase_auth.dart';
-export 'package:flutter/material.dart';
 export 'package:flutter_dotenv/flutter_dotenv.dart';
 export 'package:flutter_secure_storage/flutter_secure_storage.dart';
 

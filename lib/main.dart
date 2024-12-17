@@ -6,7 +6,6 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
   await dotenv.load(fileName: ".env");
-  bool isLoggedIn = await checkLoginStatus();
   runApp(MyApp());
 }
 

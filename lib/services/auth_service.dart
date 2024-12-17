@@ -1,5 +1,5 @@
 import 'package:ueh_mobile_app/utils/exports.dart';
-import 'package:http/http.dart' as http;
+// import 'package:http/http.dart' as http;
 
 class AuthService {
   final FirebaseAuth _auth = FirebaseAuth.instance;
