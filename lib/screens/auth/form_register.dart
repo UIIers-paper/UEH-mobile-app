@@ -1,22 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:ueh_mobile_app/configs/routes.dart';
-
 import 'package:ueh_mobile_app/utils/exports.dart';
 import 'package:ueh_mobile_app/widgets/social_button.dart';
 import 'package:ueh_mobile_app/services/auth_service.dart';
 
-
-class FormLogin extends StatefulWidget {
+class FormRegister extends StatefulWidget {
   @override
-  _LoginScreenState createState() => _LoginScreenState();
+  _RegisterScreenState createState() => _RegisterScreenState();
 }
 
-class _LoginScreenState extends State<FormLogin> {
+class _RegisterScreenState extends State<FormRegister> {
+  final _nameController = TextEditingController();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   final AuthService _authService = AuthService();
   final GlobalKey<ScaffoldMessengerState> _scaffoldMessengerKey = GlobalKey<ScaffoldMessengerState>();
-  // bool _rememberMe = false;
 
   @override
   Widget build(BuildContext context) {
@@ -32,10 +30,21 @@ class _LoginScreenState extends State<FormLogin> {
               Image.asset("assets/images/img1.png"),
               SizedBox(height: 20),
               Text(
-                'Login',
+                'Register',
                 style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold),
               ),
               SizedBox(height: 40),
+              TextField(
+                controller: _nameController,
+                decoration: InputDecoration(
+                  hintText: 'Name',
+                  prefixIcon: Icon(Icons.person, color: Colors.blue),
+                  border: UnderlineInputBorder(
+                    borderSide: BorderSide(color: Colors.blue),
+                  ),
+                ),
+              ),
+              SizedBox(height: 20),
               TextField(
                 controller: _emailController,
                 decoration: InputDecoration(
@@ -47,46 +56,29 @@ class _LoginScreenState extends State<FormLogin> {
                 ),
               ),
               SizedBox(height: 20),
-              Stack(
-                children: [
-                  TextField(
-                    controller: _passwordController,
-                    obscureText: true,
-                    decoration: InputDecoration(
-                      hintText: 'Password',
-                      prefixIcon: Icon(Icons.lock, color: Colors.blue),
-                      border: UnderlineInputBorder(
-                        borderSide: BorderSide(color: Colors.blue),
-                      ),
-                    ),
+              TextField(
+                controller: _passwordController,
+                obscureText: true,
+                decoration: InputDecoration(
+                  hintText: 'Password',
+                  prefixIcon: Icon(Icons.lock, color: Colors.blue),
+                  border: UnderlineInputBorder(
+                    borderSide: BorderSide(color: Colors.blue),
                   ),
-                  Positioned(
-                    right: 0,
-                    bottom: 0,
-                    child: TextButton(
-                      onPressed: () {
-                        Navigator.pushNamed(context, AppRoutes.forgotPassword);
-                      },
-                      child: Text(
-                        'Forgot?',
-                        style: TextStyle(color: Colors.blue),
-                      ),
-                    ),
-                  ),
-                ],
+                ),
               ),
               SizedBox(height: 20),
               ElevatedButton(
                 onPressed: () async {
-                  await _authService.loginWithEmailAndPassword(
+                  await _authService.registerWithEmailAndPassword(
+                    name: _nameController.text.trim(),
                     email: _emailController.text.trim(),
                     password: _passwordController.text.trim(),
                     context: context,
                   );
-                  // Navigator.pushNamed(context, App);
                 },
                 child: Text(
-                  'Login',
+                  'Register',
                   style: TextStyle(fontSize: 20, color: Colors.white, fontWeight: FontWeight.bold),
                 ),
                 style: ElevatedButton.styleFrom(
@@ -98,7 +90,7 @@ class _LoginScreenState extends State<FormLogin> {
                 ),
               ),
               SizedBox(height: 20),
-              Text('Or, login with...', style: TextStyle(color: Colors.grey)),
+              Text('Or, register with...', style: TextStyle(color: Colors.grey)),
               SizedBox(height: 30),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -117,11 +109,9 @@ class _LoginScreenState extends State<FormLogin> {
 
   @override
   void dispose() {
+    _nameController.dispose();
     _emailController.dispose();
     _passwordController.dispose();
     super.dispose();
   }
 }
-
-
-

@@ -100,9 +100,8 @@ class _HomeScreenState extends State<AuthHome> {
                               // Button for Login with FaceID
                               InkWell(
                                 onTap: () {
-                                  print("Login with FaceID");
                                   Navigator.pushReplacementNamed(
-                                      context, '/face_login');
+                                      context, '/register');
                                 },
                                 child: Container(
                                   width: double.infinity,
@@ -115,7 +114,7 @@ class _HomeScreenState extends State<AuthHome> {
                                     borderRadius: BorderRadius.circular(8),
                                   ),
                                   child: const Text(
-                                    "Login with FaceID",
+                                    "Register",
                                     textAlign: TextAlign.center,
                                     style: TextStyle(
                                       color: Colors.white,

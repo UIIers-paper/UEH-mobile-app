@@ -5,6 +5,30 @@ class AuthService {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FlutterSecureStorage _storage = FlutterSecureStorage();
 
+  Future<void> registerWithEmailAndPassword({
+    required String name,
+    required String email,
+    required String password,
+    required BuildContext context,
+  }) async {
+    try {
+      final userCredential = await _auth.createUserWithEmailAndPassword(
+          email: email, password: password);
+      final uid = userCredential.user!.uid;
+      await _storage.write(key: 'uid', value: uid);
+
+      // You can also save user data such as name to Firestore or other databases here
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Đăng ký thành công!")),
+      );
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Đăng ký thất bại: ${e.toString()}")),
+      );
+    }
+  }
+
   Future<void> loginWithEmailAndPassword({
     required String email,
     required String password,
@@ -25,6 +49,7 @@ class AuthService {
         return;
       }
       await _storage.write(key: 'idToken', value: idToken);
+      Navigator.pushReplacementNamed(context, '/dashboard');
 
       // if (role == 2) {
       //   Navigator.pushReplacementNamed(context, '/teacher_dashboard');

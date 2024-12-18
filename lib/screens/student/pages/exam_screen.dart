@@ -15,10 +15,9 @@ class _ExamScreenState extends State<ExamScreen> with WidgetsBindingObserver {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
 
-    // Monitor network status
     networkService.monitorNetwork().listen((ConnectivityResult result) {
       if (result == ConnectivityResult.none) {
-        _lockExam(); // Wi-Fi bị tắt, khóa bài thi
+        _lockExam();
       }
     });
   }
