@@ -6,6 +6,7 @@ import 'package:ueh_mobile_app/widgets/welcome.dart';
 import 'package:ueh_mobile_app/screens/auth/auth_home.dart';
 import 'package:ueh_mobile_app/screens/auth/form_register.dart';
 import 'package:ueh_mobile_app/screens/student/dashboard.dart';
+import 'package:ueh_mobile_app/screens/student/pages/error_screen.dart';
 import 'package:ueh_mobile_app/screens/student/pages/home_screen.dart';
 import 'package:ueh_mobile_app/screens/student/pages/profile_screen.dart';
 import 'package:ueh_mobile_app/screens/student/pages/exam_screen.dart';
@@ -23,6 +24,7 @@ class AppRoutes {
   static const String homeScreen = '/home';
   static const String examScreen = '/exam';
   static const String scheduleScreen ='/schedule';
+  static const String errorScreen = '/error';
 
   static Route<dynamic> generateRoute(RouteSettings settings) {
     switch (settings.name) {
@@ -40,6 +42,8 @@ class AppRoutes {
         return MaterialPageRoute(builder: (_) => ResetPassword());
       case dashboardScreen:
         return MaterialPageRoute(builder: (_) => Dashboard());
+      case errorScreen:
+        return MaterialPageRoute(builder: (_) => ErrorScreen());
       case "/":
         return MaterialPageRoute(builder: (_) => AuthHome());
       default:

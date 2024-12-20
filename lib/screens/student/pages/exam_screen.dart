@@ -1,52 +1,81 @@
-import 'package:ueh_mobile_app/utils/exports.dart';
+import 'package:flutter/material.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:ueh_mobile_app/services/network_service.dart';
+import 'package:ueh_mobile_app/screens/student/pages/doingexam_screen.dart';
 
 class ExamScreen extends StatefulWidget {
   @override
   _ExamScreenState createState() => _ExamScreenState();
 }
 
-class _ExamScreenState extends State<ExamScreen> with WidgetsBindingObserver {
+class _ExamScreenState extends State<ExamScreen>{
   final NetworkService networkService = NetworkService();
 
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addObserver(this);
+    // WidgetsBinding.instance.addObserver(this);
 
-    networkService.monitorNetwork().listen((ConnectivityResult result) {
-      if (result == ConnectivityResult.none) {
-        _lockExam();
-      }
-    });
+    // networkService.monitorNetwork().listen((ConnectivityResult result) {
+    //   print("Current connectivity result: $result");
+    //   if (result == ConnectivityResult.none) {
+    //     _lockExam();
+    //   }
+    // });
   }
 
-  @override
-  void didChangeAppLifecycleState(AppLifecycleState state) {
-    if (state == AppLifecycleState.paused) {
-      _lockExam(); // Chuyển sang nền => khóa bài thi
-    }
-  }
+  // @override
+  // void didChangeAppLifecycleState(AppLifecycleState state) {
+  //   print("App lifecycle state changed: $state");
+  //   if (state == AppLifecycleState.paused) {
+  //     _lockExam();
+  //   }
+  // }
 
   void _lockExam() {
-    // Xử lý logic khóa bài thi
     print("Bài thi đã bị khóa!");
     Navigator.pushReplacementNamed(context, '/error');
   }
 
-  @override
-  void dispose() {
-    WidgetsBinding.instance.removeObserver(this);
-    super.dispose();
+
+
+
+  void _doExercise() async {
+    print("Doing exercise...");
+    bool isAirplaneModeEnabled = await networkService.isAirplaneModeEnabled();
+    print("Airplane mode enabled: $isAirplaneModeEnabled");
+
+    bool isWifiEnabled = await networkService.checkNetworkStatus();
+
+    print("Wi-Fi enabled: $isWifiEnabled");
+
+    if (isWifiEnabled && !isAirplaneModeEnabled) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Bạn cần tắt Wi-Fi và bật chế độ máy bay để làm bài thi.'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    } else {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => DoingExamScreen(),
+        ),
+      );
+    }
   }
+
+
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text("Bài thi")),
       body: Center(
-        child: Text("Đây là màn hình thi"),
+        child: ElevatedButton(
+          onPressed: _doExercise,
+          child: Text("Làm bài thi"),
+        ),
       ),
     );
   }

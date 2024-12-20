@@ -6,20 +6,15 @@ import 'package:ueh_mobile_app/screens/student/pages/profile_screen.dart';
 import 'package:ueh_mobile_app/screens/student/pages/schedule_screen.dart';
 import 'package:ueh_mobile_app/services/auth_service.dart';
 
-
 // import 'package:ueh_mobile_app/models/students/homecontent.dart';
 
 class Dashboard extends StatefulWidget {
   @override
   _DashboardScreenState createState() => _DashboardScreenState();
-
-
 }
 
 class _DashboardScreenState extends State<Dashboard> {
-  bool isLoading = true;
   late List<Widget> _screens;
-
 
   int _currentIndex = 0;
   GlobalKey<CurvedNavigationBarState> _bottomNavigationKey = GlobalKey();
@@ -30,6 +25,7 @@ class _DashboardScreenState extends State<Dashboard> {
   @override
   void initState() {
     super.initState();
+    _initializeScreens();
   }
 
   void _initializeScreens() {
@@ -46,16 +42,6 @@ class _DashboardScreenState extends State<Dashboard> {
 
   @override
   Widget build(BuildContext context) {
-    if (isLoading) {
-      return Scaffold(
-        appBar: AppBar(
-          title: Text("Loading..."),
-        ),
-        body: Center(
-          child: CircularProgressIndicator(),
-        ),
-      );
-    }
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.indigo,
@@ -72,7 +58,7 @@ class _DashboardScreenState extends State<Dashboard> {
               },
               child: CircleAvatar(
                 radius: 20,
-                backgroundImage: AssetImage('assets/'),
+                backgroundImage: AssetImage('assets/images/profile.png'),
               ),
             ),
             SizedBox(width: 12),
@@ -103,11 +89,10 @@ class _DashboardScreenState extends State<Dashboard> {
                 ],
               ),
             ),
-            SizedBox(width: 12), // Use for spacing between widgets if needed
+            SizedBox(width: 12),
 
             Spacer(),
             Icon(Icons.notifications),
-
           ],
         ),
       ),
@@ -123,42 +108,30 @@ class _DashboardScreenState extends State<Dashboard> {
               accountName: Text("Loc Dinh"),
               accountEmail: Text("31221020226"),
               currentAccountPicture: CircleAvatar(
-                backgroundImage: AssetImage('assets/'),
+                backgroundImage: AssetImage('assets/images/profile.png'),
               ),
             ),
             ListTile(
               title: Text('News'),
               onTap: () {
-                // setState(() {
-                //   _bodyContent = Log();
-                // });
-                // Navigator.pop(context);
+                // Implement action
               },
             ),
             ListTile(
               title: Text('Schedule'),
               onTap: () {
-                // setState(() {
-                //   _bodyContent = Schedule();
-                // });
-                // Navigator.pop(context);
+                // Implement action
               },
             ),
             ListTile(
               title: Text('Chat'),
               onTap: () {
-                // setState(() {
-                //   _bodyContent = Chat();
-                // });
-                // Navigator.pop(context);
+                // Implement action
               },
             ),
             ListTile(
               title: Text('Absent'),
               onTap: () {
-                // setState(() {
-                //   _bodyContent = AbsentForm();
-                // });
                 Navigator.pop(context);
               },
             ),
@@ -197,4 +170,3 @@ class _DashboardScreenState extends State<Dashboard> {
     );
   }
 }
-
