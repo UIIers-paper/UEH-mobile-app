@@ -14,31 +14,7 @@ class _ExamScreenState extends State<ExamScreen>{
   @override
   void initState() {
     super.initState();
-    // WidgetsBinding.instance.addObserver(this);
-
-    // networkService.monitorNetwork().listen((ConnectivityResult result) {
-    //   print("Current connectivity result: $result");
-    //   if (result == ConnectivityResult.none) {
-    //     _lockExam();
-    //   }
-    // });
   }
-
-  // @override
-  // void didChangeAppLifecycleState(AppLifecycleState state) {
-  //   print("App lifecycle state changed: $state");
-  //   if (state == AppLifecycleState.paused) {
-  //     _lockExam();
-  //   }
-  // }
-
-  void _lockExam() {
-    print("Bài thi đã bị khóa!");
-    Navigator.pushReplacementNamed(context, '/error');
-  }
-
-
-
 
   void _doExercise() async {
     print("Doing exercise...");
