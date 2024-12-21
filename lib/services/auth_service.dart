@@ -16,9 +16,6 @@ class AuthService {
           email: email, password: password);
       final uid = userCredential.user!.uid;
       await _storage.write(key: 'uid', value: uid);
-
-      // You can also save user data such as name to Firestore or other databases here
-
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text("Đăng ký thành công!")),
       );
@@ -50,15 +47,6 @@ class AuthService {
       }
       await _storage.write(key: 'idToken', value: idToken);
       Navigator.pushReplacementNamed(context, '/dashboard');
-
-      // if (role == 2) {
-      //   Navigator.pushReplacementNamed(context, '/teacher_dashboard');
-      // } else if (role == 1) {
-      //   Navigator.pushReplacementNamed(context, '/student_dashboard');
-      // } else {
-      //   throw Exception("Unknown role");
-      // }
-
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text("Đăng nhập thành công!")),
       );

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';  // Import Google Fonts
+import 'package:google_fonts/google_fonts.dart';
 
 class SlideInfoPage extends StatelessWidget {
   final String title;
@@ -22,7 +22,7 @@ class SlideInfoPage extends StatelessWidget {
         children: [
           // Background image
           Positioned.fill(
-            child: Image.network(
+            child: Image.asset(
               imageUrl,
               fit: BoxFit.cover,
             ),
@@ -30,10 +30,9 @@ class SlideInfoPage extends StatelessWidget {
           // Blue overlay
           Positioned.fill(
             child: Container(
-              color: Colors.black.withOpacity(0.5), // Đổi màu overlay nhẹ
+              color: Colors.black.withOpacity(0.5),
             ),
           ),
-          // Overlay content
           Positioned(
             top: MediaQuery.of(context).size.height * 0.8,
             left: 20,
@@ -41,10 +40,9 @@ class SlideInfoPage extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                // Title with Google Font
                 Text(
                   title,
-                  style: GoogleFonts.lora( // Sử dụng Google Font
+                  style: GoogleFonts.lora(
                     fontSize: 32,
                     fontWeight: FontWeight.w700,
                     color: Color(0xFFDBCBAD),
