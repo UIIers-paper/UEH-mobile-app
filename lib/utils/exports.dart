@@ -15,4 +15,6 @@ export 'package:shared_preferences/shared_preferences.dart';
 
 export 'package:connectivity_plus/connectivity_plus.dart';
 export 'package:airplane_mode_checker/airplane_mode_checker.dart';
-
+export 'package:path_provider/path_provider.dart';
+export 'package:webview_flutter/webview_flutter.dart';
+export 'dart:io';
