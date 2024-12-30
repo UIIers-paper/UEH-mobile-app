@@ -20,12 +20,12 @@ class _LocalHtmlViewerState extends State<LocalHtmlViewer> {
         NavigationDelegate(
           onPageStarted: (url) {
             setState(() {
-              isLoading = true; 
+              isLoading = true;
             });
           },
           onPageFinished: (url) {
             setState(() {
-              isLoading = false; 
+              isLoading = false;
             });
           },
         ),
@@ -51,9 +51,6 @@ class _LocalHtmlViewerState extends State<LocalHtmlViewer> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text("Hiển thị đề thi"),
-      ),
       body: localFilePath.isEmpty
           ? Center(child: CircularProgressIndicator())
           : WebViewWidget(
