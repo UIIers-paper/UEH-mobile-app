@@ -4,6 +4,7 @@ import 'package:ueh_mobile_app/configs/routes.dart';
 import 'package:ueh_mobile_app/utils/exports.dart';
 import 'package:ueh_mobile_app/widgets/social_button.dart';
 import 'package:ueh_mobile_app/services/auth_service.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 
 class FormLogin extends StatefulWidget {
@@ -17,6 +18,30 @@ class _LoginScreenState extends State<FormLogin> {
   final AuthService _authService = AuthService();
   final GlobalKey<ScaffoldMessengerState> _scaffoldMessengerKey = GlobalKey<ScaffoldMessengerState>();
   // bool _rememberMe = false;
+
+  void _signInWithGoogle() async {
+    try {
+      await _authService.signInWithGoogle();
+    } catch (e) {
+      print("Verification failed: $e");
+    }
+  }
+
+  void _signInWithMicrosoft() async {
+    try {
+      await _authService.signInWithMicrosoft();
+    } catch (e) {
+      print("Verification failed: $e");
+    }
+  }
+
+  void _signInWithPhone() async{
+    try{
+
+    }catch (e){
+      print("Verification failed: $e");
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -103,9 +128,10 @@ class _LoginScreenState extends State<FormLogin> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
-                  SocialLoginButton(icon: Icons.g_translate, color: Colors.blue),
-                  SocialLoginButton(icon: Icons.facebook, color: Colors.blue),
-                  SocialLoginButton(icon: Icons.apple, color: Colors.black),
+                  SocialLoginButton(icon: FontAwesomeIcons.google, color: Colors.blueAccent, onLogin: _signInWithGoogle),
+                  SocialLoginButton(icon: FontAwesomeIcons.microsoft, color:  Colors.blueAccent, onLogin: _signInWithMicrosoft),
+                  SocialLoginButton(icon: FontAwesomeIcons.phone, color: Colors.black, onLogin: _signInWithPhone),
+
                 ],
               ),
             ],

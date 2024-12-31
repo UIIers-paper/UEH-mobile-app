@@ -95,9 +95,9 @@ class _RegisterScreenState extends State<FormRegister> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
-                  SocialLoginButton(icon: Icons.g_translate, color: Colors.blue),
-                  SocialLoginButton(icon: Icons.facebook, color: Colors.blue),
-                  SocialLoginButton(icon: Icons.apple, color: Colors.black),
+                  // SocialLoginButton(icon: Icons.g_translate, color: Colors.blue),
+                  // SocialLoginButton(icon: Icons.facebook, color: Colors.blue),
+                  // SocialLoginButton(icon: Icons.apple, color: Colors.black),
                 ],
               ),
             ],

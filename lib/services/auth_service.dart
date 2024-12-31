@@ -96,12 +96,10 @@ class AuthService {
 
   Future<User?> signInWithMicrosoft() async {
     try {
-      // Thay YOUR_CLIENT_ID và YOUR_TENANT_ID bằng giá trị thực tế từ Microsoft Azure
       const clientId = "YOUR_CLIENT_ID";
       const tenantId = "YOUR_TENANT_ID";
       const redirectUri = "https://<app-id>.firebaseapp.com/__/auth/handler";
 
-      // Bắt đầu quy trình xác thực
       final authUrl =
           "https://login.microsoftonline.com/$tenantId/oauth2/v2.0/authorize"
           "?client_id=$clientId"
@@ -114,11 +112,7 @@ class AuthService {
         url: authUrl,
         callbackUrlScheme: "https",
       );
-
-      // Lấy mã xác thực từ URL callback
       final code = Uri.parse(result).queryParameters['code'];
-
-      // Gửi mã xác thực tới Firebase để tạo Custom Token
       final response = await _auth.signInWithCustomToken(code!);
       return response.user;
     } catch (e) {
@@ -126,6 +120,146 @@ class AuthService {
       return null;
     }
   }
+
+  Future<void> signInWithPhone(String phoneNumber, Function(String) onCodeSent) async {
+    FirebaseAuth.instance.verifyPhoneNumber(
+      phoneNumber: phoneNumber,
+      verificationCompleted: (PhoneAuthCredential credential) async {
+        await FirebaseAuth.instance.signInWithCredential(credential);
+      },
+      verificationFailed: (FirebaseAuthException e) {
+        print("Verification Failed: ${e.message}");
+      },
+      codeSent: (String verificationId, int? resendToken) {
+        onCodeSent(verificationId);
+      },
+      codeAutoRetrievalTimeout: (String verificationId) {},
+    );
+  }
+
+  Future<void> verifyPhoneCode({required String verificationId, required String smsCode, required BuildContext context}) async {
+    try {
+      final credential = PhoneAuthProvider.credential(
+          verificationId: verificationId, smsCode: smsCode);
+      await FirebaseAuth.instance.signInWithCredential(credential);
+      Navigator.pushReplacementNamed(context, '/dashboard');
+    } catch(e){
+      print("Verification failed: $e");
+    }
+  }
+
+
+  Future<void> linkAccountWithCredential(AuthCredential credential, BuildContext context) async {
+    try {
+      final user = FirebaseAuth.instance.currentUser;
+
+      if (user != null) {
+        await user.linkWithCredential(credential);
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text("Liên kết phương thức đăng nhập thành công!")),
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text("Người dùng chưa đăng nhập!")),
+        );
+      }
+    } catch (e) {
+      print("Lỗi khi liên kết tài khoản: $e");
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Liên kết tài khoản thất bại: ${e.toString()}")),
+      );
+    }
+  }
+
+  Future<void> linkGoogleAccount(BuildContext context) async {
+    try {
+      final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
+      if (googleUser == null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text("Không thể lấy thông tin từ Google")),
+        );
+        return;
+      }
+
+      final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
+      final AuthCredential credential = GoogleAuthProvider.credential(
+        accessToken: googleAuth.accessToken,
+        idToken: googleAuth.idToken,
+      );
+
+      await linkAccountWithCredential(credential, context);
+    } catch (e) {
+      print("Lỗi khi liên kết Google: $e");
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Liên kết Google thất bại: ${e.toString()}")),
+      );
+    }
+  }
+
+  Future<void> linkPhoneAccount({
+    required String phoneNumber,
+    required Function(String) onCodeSent,
+    required BuildContext context,
+  }) async {
+    FirebaseAuth.instance.verifyPhoneNumber(
+      phoneNumber: phoneNumber,
+      verificationCompleted: (PhoneAuthCredential credential) async {
+        await linkAccountWithCredential(credential, context);
+      },
+      verificationFailed: (FirebaseAuthException e) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text("Xác minh số điện thoại thất bại: ${e.message}")),
+        );
+      },
+      codeSent: (String verificationId, int? resendToken) {
+        onCodeSent(verificationId);
+      },
+      codeAutoRetrievalTimeout: (String verificationId) {},
+    );
+  }
+
+  Future<void> linkMicrosoftAccount(BuildContext context) async {
+    try {
+      const clientId = "YOUR_CLIENT_ID";
+      const tenantId = "YOUR_TENANT_ID";
+      const redirectUri = "https://<app-id>.firebaseapp.com/__/auth/handler";
+
+      final authUrl =
+          "https://login.microsoftonline.com/$tenantId/oauth2/v2.0/authorize"
+          "?client_id=$clientId"
+          "&response_type=code"
+          "&redirect_uri=$redirectUri"
+          "&response_mode=query"
+          "&scope=openid profile email";
+      final result = await FlutterWebAuth2.authenticate(
+        url: authUrl,
+        callbackUrlScheme: "https",
+      );
+      final code = Uri.parse(result).queryParameters['code'];
+
+      if (code == null) {
+        throw Exception("Không lấy được mã xác thực Microsoft.");
+      }
+      final AuthCredential credential = OAuthProvider("microsoft.com").credential(
+        idToken: code,
+      );
+      final currentUser = FirebaseAuth.instance.currentUser;
+      if (currentUser == null) {
+        throw Exception("Không tìm thấy người dùng hiện tại.");
+      }
+      await currentUser.linkWithCredential(credential);
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Liên kết tài khoản Microsoft thành công!")),
+      );
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Liên kết tài khoản Microsoft thất bại: $e")),
+      );
+    }
+  }
+
+
 
 
   Future<void> logout(BuildContext context) async {
