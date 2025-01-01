@@ -1,25 +1,34 @@
 import 'package:ueh_mobile_app/utils/exports.dart';
 import 'package:ueh_mobile_app/configs/routes.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:provider/provider.dart';
+import 'package:ueh_mobile_app/services/auth_service.dart';
 
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
-  await dotenv.load();
+  await dotenv.load(fileName: ".env");
   runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return MultiProvider(
+        providers: [
+        Provider<AuthService>(
+        create: (_) => AuthService(),
+    ),
+    ],
+    child: MaterialApp(
       title: 'UEH demo app',
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
       initialRoute: AppRoutes.welcomeHome,
       onGenerateRoute: AppRoutes.generateRoute,
+    ),
     );
   }
 }

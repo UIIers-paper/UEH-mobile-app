@@ -12,6 +12,7 @@ export 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 export 'package:firebase_core/firebase_core.dart';
 export 'package:shared_preferences/shared_preferences.dart';
+export 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 export 'package:connectivity_plus/connectivity_plus.dart';
 export 'package:airplane_mode_checker/airplane_mode_checker.dart';

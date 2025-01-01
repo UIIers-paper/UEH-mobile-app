@@ -1,16 +1,38 @@
-import 'package:flutter/material.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:ueh_mobile_app/utils/exports.dart';
 import 'package:ueh_mobile_app/widgets/text_field.dart';
+import 'package:ueh_mobile_app/services/auth_service.dart';
+
 class AccountLinkingContent extends StatelessWidget {
   final TextEditingController microsoftEmailController;
   final TextEditingController googleEmailController;
   final TextEditingController phoneController = TextEditingController();
-
+  final AuthService _authService = AuthService();
   AccountLinkingContent({
     Key? key,
     required this.microsoftEmailController,
     required this.googleEmailController,
   }) : super(key: key);
+
+
+  void _checkAndHandleEmptyFields({
+    required BuildContext context,
+    required Map<String, TextEditingController> fields,
+    required VoidCallback onAllFieldsValid,
+  }) {
+    bool hasEmptyField = false;
+    fields.forEach((fieldName, controller) {
+      if (controller.text.isEmpty) {
+        hasEmptyField = true;
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text("Please enter $fieldName.")),
+        );
+      }
+    });
+
+    if (!hasEmptyField) {
+      onAllFieldsValid();
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -44,19 +66,25 @@ class AccountLinkingContent extends StatelessWidget {
                 labelText: "Microsoft Account Email",
                 icon: FontAwesomeIcons.microsoft,
                 color: Colors.blueAccent,
-                onButtonPressed: () {
-                  final email = microsoftEmailController.text;
-                  if (email.isNotEmpty) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                          content: Text("Linked Microsoft account: $email")),
-                    );
-                  } else {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text(
-                          "Please enter Microsoft account email.")),
-                    );
-                  }
+                onButtonPressed: () async {
+                  _checkAndHandleEmptyFields(
+                    context: context,
+                    fields: {
+                      "Microsoft account email": microsoftEmailController,
+                    },
+                    onAllFieldsValid: () async {
+                      try {
+                        await _authService.linkMicrosoftAccount(context);
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text("Microsoft account linked successfully!")),
+                        );
+                      } catch (e) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text("Failed to link Microsoft account: $e")),
+                        );
+                      }
+                    },
+                  );
                 },
               ),
               SizedBox(height: 15),
@@ -65,18 +93,25 @@ class AccountLinkingContent extends StatelessWidget {
                 labelText: "Google Account Email",
                 icon: FontAwesomeIcons.google,
                 color: Colors.redAccent,
-                onButtonPressed: () {
-                  final email = googleEmailController.text;
-                  if (email.isNotEmpty) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text("Linked Google account: $email")),
-                    );
-                  } else {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                          content: Text("Please enter Google account email.")),
-                    );
-                  }
+                onButtonPressed: () async{
+                  _checkAndHandleEmptyFields(
+                    context: context,
+                    fields: {
+                      "Google account email": googleEmailController,
+                    },
+                    onAllFieldsValid: () async {
+                      try {
+                        await _authService.linkGoogleAccount(context);
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text("Google account linked successfully!")),
+                        );
+                      } catch (e) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text("Failed to link Google account: $e")),
+                        );
+                      }
+                    },
+                  );
                 },
               ),
               SizedBox(height: 15),
@@ -87,16 +122,24 @@ class AccountLinkingContent extends StatelessWidget {
                 color: Colors.green,
                 keyboardType: TextInputType.phone,
                 onButtonPressed: () {
-                  final phone = phoneController.text;
-                  if (phone.isNotEmpty) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text("Linked phone number: $phone")),
-                    );
-                  } else {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text("Please enter phone number.")),
-                    );
-                  }
+                  _checkAndHandleEmptyFields(
+                    context: context,
+                    fields: {
+                      "Phone number": phoneController,
+                    },
+                    onAllFieldsValid: () {
+                      final phoneNumber = phoneController.text;
+                      _authService.linkPhoneAccount(
+                        phoneNumber: phoneNumber,
+                        onCodeSent: (verificationId) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(content: Text("Verification code sent to $phoneNumber")),
+                          );
+                        },
+                        context: context,
+                      );
+                    },
+                  );
                 },
               ),
               SizedBox(height: 25),

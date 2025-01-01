@@ -2,11 +2,21 @@ import 'package:ueh_mobile_app/utils/exports.dart';
 // import 'package:http/http.dart' as http;
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:flutter_web_auth_2/flutter_web_auth_2.dart';
-
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 class AuthService {
+  final clientId = dotenv.env['MICROSOFT_CLIENT_ID'];
+  final tenantId = dotenv.env['MICROSOFT_TENANT_ID'];
+  final redirectUri = dotenv.env['MICROSOFT_REDIRECT_URI'];
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FlutterSecureStorage _storage = FlutterSecureStorage();
-  final GoogleSignIn _googleSignIn = GoogleSignIn();
+  final GoogleSignIn _googleSignIn = GoogleSignIn(
+    clientId:
+    dotenv.env['GOOGLE_CLIENT_ID'],
+    scopes: [
+      'email',
+      'https://www.googleapis.com/auth/contacts.readonly',
+    ],
+  );
 
   Future<void> registerWithEmailAndPassword({
     required String name,
@@ -75,13 +85,19 @@ class AuthService {
 
   Future<User?> signInWithGoogle() async {
     try {
+      print('google ....');
       final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
 
       if (googleUser == null) {
-        return null; 
+        return null;
       }
 
       final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
+      print('google ....');
+      if (googleAuth.accessToken == null || googleAuth.idToken == null) {
+        return null;
+      }
+
       final AuthCredential credential = GoogleAuthProvider.credential(
         accessToken: googleAuth.accessToken,
         idToken: googleAuth.idToken,
@@ -93,13 +109,8 @@ class AuthService {
       return null;
     }
   }
-
   Future<User?> signInWithMicrosoft() async {
     try {
-      const clientId = "YOUR_CLIENT_ID";
-      const tenantId = "YOUR_TENANT_ID";
-      const redirectUri = "https://<app-id>.firebaseapp.com/__/auth/handler";
-
       final authUrl =
           "https://login.microsoftonline.com/$tenantId/oauth2/v2.0/authorize"
           "?client_id=$clientId"
@@ -135,6 +146,19 @@ class AuthService {
       },
       codeAutoRetrievalTimeout: (String verificationId) {},
     );
+  }
+
+  Future<void> saveUserAuthentication(User? user, BuildContext context) async{
+    final uid = user!.uid;
+    await _storage.write(key: 'uid', value: uid);
+    final idTokenResult = await user!.getIdTokenResult(true);
+    final idToken = idTokenResult.token;
+    await _storage.write(key: 'idToken', value: idToken);
+    Navigator.pushReplacementNamed(context, '/dashboard');
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text("Đăng nhập thành công!")),
+    );
+
   }
 
   Future<void> verifyPhoneCode({required String verificationId, required String smsCode, required BuildContext context}) async {
@@ -220,10 +244,6 @@ class AuthService {
 
   Future<void> linkMicrosoftAccount(BuildContext context) async {
     try {
-      const clientId = "YOUR_CLIENT_ID";
-      const tenantId = "YOUR_TENANT_ID";
-      const redirectUri = "https://<app-id>.firebaseapp.com/__/auth/handler";
-
       final authUrl =
           "https://login.microsoftonline.com/$tenantId/oauth2/v2.0/authorize"
           "?client_id=$clientId"
@@ -259,9 +279,6 @@ class AuthService {
     }
   }
 
-
-
-
   Future<void> logout(BuildContext context) async {
     try {
       await FirebaseAuth.instance.signOut();
@@ -270,7 +287,6 @@ class AuthService {
       print("Logout failed: $e");
     }
   }
-
 
 
 }

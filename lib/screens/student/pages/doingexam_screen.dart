@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+// import 'package:flutter/foundation.dart'; // Import UniqueKey
+import 'package:ueh_mobile_app/widgets/bottom_answer_widget.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:ueh_mobile_app/services/network_service.dart';
 import 'package:ueh_mobile_app/widgets/local_exam.dart';
@@ -10,8 +12,10 @@ class DoingExamScreen extends StatefulWidget {
 
 class _DoingExamScreenState extends State<DoingExamScreen> with WidgetsBindingObserver {
   final NetworkService networkService = NetworkService();
+  bool isBottomSheetOpen = false;
   int currentQuestionIndex = 0;
   final List<String> questions = ["Câu hỏi 1", "Câu hỏi 2", "Câu hỏi 3"];
+  String selectedAnswer = "";
 
   @override
   void initState() {
@@ -36,24 +40,35 @@ class _DoingExamScreenState extends State<DoingExamScreen> with WidgetsBindingOb
     Navigator.pushReplacementNamed(context, '/error');
   }
 
-  void _nextQuestion() {
-    if (currentQuestionIndex < questions.length - 1) {
-      setState(() {
-        currentQuestionIndex++;
-      });
-    }
-  }
+  void _toggleBottomSheet() {
+    setState(() {
+      isBottomSheetOpen = !isBottomSheetOpen;
+    });
 
-  void _previousQuestion() {
-    if (currentQuestionIndex > 0) {
-      setState(() {
-        currentQuestionIndex--;
-      });
+    if (isBottomSheetOpen) {
+      showModalBottomSheet(
+        context: context,
+        isScrollControlled: true,
+        builder: (context) => BottomAnswerWidget(
+          questions: questions,
+          currentQuestionIndex: currentQuestionIndex,
+          selectedAnswer: selectedAnswer,
+          onAnswerChanged: (value) {
+            setState(() {
+              selectedAnswer = value ?? "";
+            });
+          },
+          onClose: () {
+            setState(() {
+              isBottomSheetOpen = false;
+            });
+            Navigator.pop(context);
+          },
+        ),
+      );
+    } else {
+      Navigator.pop(context);
     }
-  }
-
-  void _flagQuestion() {
-    print("Câu hỏi ${currentQuestionIndex + 1} đã được đánh dấu.");
   }
 
   @override
@@ -62,76 +77,15 @@ class _DoingExamScreenState extends State<DoingExamScreen> with WidgetsBindingOb
       appBar: AppBar(
         title: Text("Đề Thi"),
       ),
-      body: Column(
+      body: Stack(
         children: [
-          Expanded(
-            flex: 6,
-            child: LocalHtmlViewer(),
-          ),
-          Expanded(
-            flex: 4,
-            child: Container(
-              padding: EdgeInsets.all(16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    "${questions[currentQuestionIndex]}",
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  SizedBox(height: 16),
-                  Expanded(
-                    child: ListView(
-                      children: [
-                        RadioListTile<String>(
-                          title: Text("A. Đáp án A"),
-                          value: "A",
-                          groupValue: "selectedAnswer",
-                          onChanged: (value) {},
-                        ),
-                        RadioListTile<String>(
-                          title: Text("B. Đáp án B"),
-                          value: "B",
-                          groupValue: "selectedAnswer",
-                          onChanged: (value) {},
-                        ),
-                        RadioListTile<String>(
-                          title: Text("C. Đáp án C"),
-                          value: "C",
-                          groupValue: "selectedAnswer",
-                          onChanged: (value) {},
-                        ),
-                        RadioListTile<String>(
-                          title: Text("D. Đáp án D"),
-                          value: "D",
-                          groupValue: "selectedAnswer",
-                          onChanged: (value) {},
-                        ),
-                      ],
-                    ),
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      IconButton(
-                        icon: Icon(Icons.arrow_back),
-                        onPressed: _previousQuestion,
-                      ),
-                      IconButton(
-                        icon: Icon(Icons.arrow_forward),
-                        onPressed: _nextQuestion,
-                      ),
-                      IconButton(
-                        icon: Icon(Icons.flag),
-                        onPressed: _flagQuestion,
-                      ),
-                    ],
-                  ),
-                ],
-              ),
+          LocalHtmlViewer(),
+          Positioned(
+            bottom: 16,
+            right: 16,
+            child: FloatingActionButton(
+              onPressed: _toggleBottomSheet,
+              child: Icon(isBottomSheetOpen ? Icons.close : Icons.edit),
             ),
           ),
         ],

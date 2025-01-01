@@ -23,7 +23,7 @@ class _LocalHtmlViewerState extends State<LocalHtmlViewer> {
               isLoading = true;
             });
           },
-          onPageFinished: (url) {
+          onPageFinished: (url)  {
             setState(() {
               isLoading = false;
             });

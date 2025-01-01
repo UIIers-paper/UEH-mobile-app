@@ -19,23 +19,26 @@ class _LoginScreenState extends State<FormLogin> {
   final GlobalKey<ScaffoldMessengerState> _scaffoldMessengerKey = GlobalKey<ScaffoldMessengerState>();
   // bool _rememberMe = false;
 
-  void _signInWithGoogle() async {
+  void _signInWithGoogle(BuildContext context) async {
     try {
-      await _authService.signInWithGoogle();
+      print("login with google");
+      User? user = await _authService.signInWithGoogle();
+      await _authService.saveUserAuthentication(user, context);
     } catch (e) {
       print("Verification failed: $e");
     }
   }
 
-  void _signInWithMicrosoft() async {
+  void _signInWithMicrosoft(BuildContext context) async {
     try {
-      await _authService.signInWithMicrosoft();
+      User? user = await _authService.signInWithMicrosoft();
+      await _authService.saveUserAuthentication(user, context);
     } catch (e) {
       print("Verification failed: $e");
     }
   }
 
-  void _signInWithPhone() async{
+  void _signInWithPhone(BuildContext context) async{
     try{
 
     }catch (e){
@@ -128,9 +131,9 @@ class _LoginScreenState extends State<FormLogin> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
-                  SocialLoginButton(icon: FontAwesomeIcons.google, color: Colors.blueAccent, onLogin: _signInWithGoogle),
-                  SocialLoginButton(icon: FontAwesomeIcons.microsoft, color:  Colors.blueAccent, onLogin: _signInWithMicrosoft),
-                  SocialLoginButton(icon: FontAwesomeIcons.phone, color: Colors.black, onLogin: _signInWithPhone),
+                  SocialLoginButton(icon: FontAwesomeIcons.google, color: Colors.blueAccent, onLogin: () => _signInWithGoogle(context)),
+                  SocialLoginButton(icon: FontAwesomeIcons.microsoft, color:  Colors.blueAccent, onLogin: () => _signInWithMicrosoft(context)),
+                  SocialLoginButton(icon: FontAwesomeIcons.phone, color: Colors.black, onLogin: () => _signInWithPhone(context)),
 
                 ],
               ),
