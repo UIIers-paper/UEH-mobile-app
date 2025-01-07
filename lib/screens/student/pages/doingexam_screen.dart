@@ -4,7 +4,7 @@ import 'package:ueh_mobile_app/widgets/bottom_answer_widget.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:ueh_mobile_app/services/network_service.dart';
 import 'package:ueh_mobile_app/widgets/local_exam.dart';
-
+import 'package:ueh_mobile_app/services/user_service.dart';
 class DoingExamScreen extends StatefulWidget {
   @override
   _DoingExamScreenState createState() => _DoingExamScreenState();
@@ -12,6 +12,7 @@ class DoingExamScreen extends StatefulWidget {
 
 class _DoingExamScreenState extends State<DoingExamScreen> with WidgetsBindingObserver {
   final NetworkService networkService = NetworkService();
+  final UserService _userLog = UserService();
   bool isBottomSheetOpen = false;
   int currentQuestionIndex = 0;
   final List<String> questions = ["Câu hỏi 1", "Câu hỏi 2", "Câu hỏi 3"];
@@ -25,6 +26,7 @@ class _DoingExamScreenState extends State<DoingExamScreen> with WidgetsBindingOb
     networkService.monitorNetwork().listen((ConnectivityResult result) {
       if (result != ConnectivityResult.none) {
         _lockExam();
+        _userLog.recordViolation("network");
       }
     });
   }
@@ -33,11 +35,13 @@ class _DoingExamScreenState extends State<DoingExamScreen> with WidgetsBindingOb
   void didChangeAppLifecycleState(AppLifecycleState state) {
     if (state == AppLifecycleState.paused) {
       _lockExam();
+      _userLog.recordViolation("app_paused");
     }
   }
 
   void _lockExam() {
-    Navigator.pushReplacementNamed(context, '/error');
+    print("vi phạm");
+    // Navigator.pushReplacementNamed(context, '/error');
   }
 
   void _toggleBottomSheet() {

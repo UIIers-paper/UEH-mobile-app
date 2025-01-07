@@ -5,7 +5,7 @@ import 'package:ueh_mobile_app/utils/exports.dart';
 import 'package:ueh_mobile_app/widgets/social_button.dart';
 import 'package:ueh_mobile_app/services/auth_service.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-
+import 'package:ueh_mobile_app/services/user_service.dart';
 
 class FormLogin extends StatefulWidget {
   @override
@@ -16,35 +16,8 @@ class _LoginScreenState extends State<FormLogin> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   final AuthService _authService = AuthService();
+  final UserService _userLog = UserService();
   final GlobalKey<ScaffoldMessengerState> _scaffoldMessengerKey = GlobalKey<ScaffoldMessengerState>();
-  // bool _rememberMe = false;
-
-  void _signInWithGoogle(BuildContext context) async {
-    try {
-      print("login with google");
-      User? user = await _authService.signInWithGoogle();
-      await _authService.saveUserAuthentication(user, context);
-    } catch (e) {
-      print("Verification failed: $e");
-    }
-  }
-
-  void _signInWithMicrosoft(BuildContext context) async {
-    try {
-      User? user = await _authService.signInWithMicrosoft();
-      await _authService.saveUserAuthentication(user, context);
-    } catch (e) {
-      print("Verification failed: $e");
-    }
-  }
-
-  void _signInWithPhone(BuildContext context) async{
-    try{
-
-    }catch (e){
-      print("Verification failed: $e");
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -111,7 +84,7 @@ class _LoginScreenState extends State<FormLogin> {
                     password: _passwordController.text.trim(),
                     context: context,
                   );
-                  // Navigator.pushNamed(context, App);
+                  await _userLog.saveUserInfo();
                 },
                 child: Text(
                   'Login',
@@ -149,6 +122,37 @@ class _LoginScreenState extends State<FormLogin> {
     _emailController.dispose();
     _passwordController.dispose();
     super.dispose();
+  }
+
+
+  void _signInWithGoogle(BuildContext context) async {
+    try {
+      print("login with google");
+      User? user = await _authService.signInWithGoogle();
+      await _authService.saveUserAuthentication(user, context);
+      await _userLog.saveUserInfo();
+    } catch (e) {
+      print("Verification failed: $e");
+    }
+  }
+
+  void _signInWithMicrosoft(BuildContext context) async {
+    try {
+      User? user = await _authService.signInWithMicrosoft();
+      await _authService.saveUserAuthentication(user, context);
+      await _userLog.saveUserInfo();
+    } catch (e) {
+      print("Verification failed: $e");
+    }
+  }
+
+  void _signInWithPhone(BuildContext context) async{
+    try{
+      await _userLog.saveUserInfo();
+
+    }catch (e){
+      print("Verification failed: $e");
+    }
   }
 }
 
