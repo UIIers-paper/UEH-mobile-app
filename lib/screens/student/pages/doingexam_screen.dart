@@ -41,6 +41,12 @@ class _DoingExamScreenState extends State<DoingExamScreen> with WidgetsBindingOb
 
   void _lockExam() {
     print("vi phạm");
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('Bạn đã vi phạm quy chế thi'),
+        backgroundColor: Colors.red,
+      ),
+    );
     // Navigator.pushReplacementNamed(context, '/error');
   }
 
