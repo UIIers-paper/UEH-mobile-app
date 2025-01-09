@@ -5,9 +5,7 @@ import 'package:ueh_mobile_app/screens/student/pages/home_screen.dart';
 import 'package:ueh_mobile_app/screens/student/pages/profile_screen.dart';
 import 'package:ueh_mobile_app/screens/student/pages/schedule_screen.dart';
 import 'package:ueh_mobile_app/services/auth_service.dart';
-
-// import 'package:ueh_mobile_app/models/students/homecontent.dart';
-
+import 'package:ueh_mobile_app/services/user_service.dart';
 class Dashboard extends StatefulWidget {
   @override
   _DashboardScreenState createState() => _DashboardScreenState();
@@ -15,6 +13,7 @@ class Dashboard extends StatefulWidget {
 
 class _DashboardScreenState extends State<Dashboard> {
   late List<Widget> _screens;
+  final UserService userService = UserService();
 
   int _currentIndex = 0;
   GlobalKey<CurvedNavigationBarState> _bottomNavigationKey = GlobalKey();
@@ -160,7 +159,9 @@ class _DashboardScreenState extends State<Dashboard> {
         backgroundColor: Colors.transparent,
         animationCurve: Curves.easeInOut,
         animationDuration: Duration(milliseconds: 300),
-        onTap: (index) {
+        onTap: (index) async{
+          var info= await userService.DeviceTestinginfo();
+          printData(info);
           setState(() {
             _currentIndex = index;
             _bodyContent = _screens[_currentIndex];
@@ -169,4 +170,11 @@ class _DashboardScreenState extends State<Dashboard> {
       ),
     );
   }
+
+  void printData(Map<String, dynamic> data) {
+    data.forEach((key, value) {
+      print('$key: $value');
+    });
+  }
+
 }
