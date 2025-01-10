@@ -84,7 +84,7 @@ class _LoginScreenState extends State<FormLogin> {
                     password: _passwordController.text.trim(),
                     context: context,
                   );
-                  await _userLog.saveUserInfo();
+                  await _userLog.logUserInfo();
                 },
                 child: Text(
                   'Login',
@@ -130,7 +130,7 @@ class _LoginScreenState extends State<FormLogin> {
       print("login with google");
       User? user = await _authService.signInWithGoogle();
       await _authService.saveUserAuthentication(user, context);
-      await _userLog.saveUserInfo();
+      await _userLog.logUserInfo();
     } catch (e) {
       print("Verification failed: $e");
     }
@@ -140,7 +140,7 @@ class _LoginScreenState extends State<FormLogin> {
     try {
       User? user = await _authService.signInWithMicrosoft();
       await _authService.saveUserAuthentication(user, context);
-      await _userLog.saveUserInfo();
+      await _userLog.logUserInfo();
     } catch (e) {
       print("Verification failed: $e");
     }
@@ -148,7 +148,7 @@ class _LoginScreenState extends State<FormLogin> {
 
   void _signInWithPhone(BuildContext context) async{
     try{
-      await _userLog.saveUserInfo();
+      await _userLog.logUserInfo();
 
     }catch (e){
       print("Verification failed: $e");

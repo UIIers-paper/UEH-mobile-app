@@ -160,7 +160,7 @@ class _DashboardScreenState extends State<Dashboard> {
         animationCurve: Curves.easeInOut,
         animationDuration: Duration(milliseconds: 300),
         onTap: (index) async{
-          var info= await userService.DeviceTestinginfo();
+          var info= await userService.getDeviceInformation();
           printData(info);
           setState(() {
             _currentIndex = index;

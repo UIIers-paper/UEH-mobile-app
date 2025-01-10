@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-// import 'package:device_info/device_info.dart';
 import 'package:device_info_plus/device_info_plus.dart';
+import 'package:mobile_device_identifier/mobile_device_identifier.dart';
 
 import 'dart:io';
 
@@ -12,58 +12,55 @@ class UserService {
   }
 
   Future<String?> getDeviceId() async {
-    var deviceInfo = DeviceInfoPlugin();
-    late String? deviceId;
-    if (Platform.isIOS) {
-      var iosDeviceInfo = await deviceInfo.iosInfo;
-      deviceId = iosDeviceInfo.identifierForVendor;
-      print(iosDeviceInfo);
-    } else if (Platform.isAndroid) {
-      var androidDeviceInfo = await deviceInfo.androidInfo;
-      // print(androidDeviceInfo);
-      deviceId = androidDeviceInfo.id;
-      print(deviceId);
-    } else {
-      deviceId = 'null';
+    try {
+      final String? deviceId = await MobileDeviceIdentifier().getDeviceId();
+      print("Device ID: $deviceId");
+      return deviceId;
+    } catch (e) {
+      print("Error fetching Device ID: $e");
     }
-    return deviceId;
+
   }
-  Future <Map<String, dynamic>> DeviceTestinginfo() async {
+  Future <Map<String, dynamic>> getDeviceInformation() async {
     var deviceInfo = DeviceInfoPlugin();
-    late String? deviceId;
     late var data;
     if (Platform.isIOS) {
       var iosDeviceInfo = await deviceInfo.iosInfo;
-      deviceId = iosDeviceInfo.identifierForVendor;
-      print(iosDeviceInfo);
       data=_readIosDeviceInfo(iosDeviceInfo);
     } else if (Platform.isAndroid) {
       var androidDeviceInfo = await deviceInfo.androidInfo;
-      // print(androidDeviceInfo);
-      // deviceId = androidDeviceInfo.id;
       data= _readAndroidBuildData(androidDeviceInfo);
     } else {
-      deviceId = 'null';
+      data = 'null';
     }
     return data;
   }
 
-  Future<void> saveUserInfo() async {
+  Future<void> logUserInfo() async {
     try {
       String? userId = await getUserId();
       String? deviceId = await getDeviceId();
       DateTime loginTime = DateTime.now();
 
       if (userId != null) {
+        Map<String, dynamic> deviceData = await getDeviceInformation();
         String logId = DateTime.now().millisecondsSinceEpoch.toString();
-        // await FirebaseFirestore.instance.collection('user_logs').add({
-        //   'log_id': logId,
-        //   'user_id': userId,
-        //   'device_id': deviceId,
-        //   'login_time': loginTime.toIso8601String(),
-        //   'logout_time': null,
-        //   'exam_ids': [],
-        // });
+        await FirebaseFirestore.instance.collection('user_logs').add({
+          'log_id': logId,
+          'user_id': userId,
+          'device_id': deviceId,
+          'login_time': loginTime.toIso8601String(),
+          'logout_time': null,
+          'device_info': {
+            'device_id': deviceId,
+            'platform': Platform.isAndroid ? 'Android' : 'iOS',
+            'model': deviceData['model'],
+            'hardware': deviceData['hardware'],
+            'os_version': Platform.isAndroid ? deviceData['version.release'] : deviceData['systemVersion'],
+            'sdk_version': Platform.isAndroid ? deviceData['version.sdkInt'] : null,
+            'is_physical_device': deviceData['isPhysicalDevice'],
+          }
+        });
         print(deviceId);
         print("Thông tin người dùng đã được lưu!");
       } else {
@@ -81,27 +78,27 @@ class UserService {
       if (userId == null) return;
       String examId = DateTime.now().millisecondsSinceEpoch.toString();
       final docRef = FirebaseFirestore.instance.collection('exam_violations').doc(userId);
-      // await docRef.set({
-      //   'exam_id': examId,
-      //   'user_id': userId,
-      //   'violations': {
-      //     violationType: FieldValue.increment(1),
-      //   },
-      // }, SetOptions(merge: true));
-      //
-      // final userLogsRef = FirebaseFirestore.instance
-      //     .collection('user_logs')
-      //     .where('user_id', isEqualTo: userId)
-      //     .orderBy('login_time', descending: true)
-      //     .limit(1);
-      // final snapshot = await userLogsRef.get();
+      await docRef.set({
+        'exam_id': examId,
+        'user_id': userId,
+        'violations': {
+          violationType: FieldValue.increment(1),
+        },
+      }, SetOptions(merge: true));
 
-      // if (snapshot.docs.isNotEmpty) {
-      //   var logDoc = snapshot.docs.first;
-      //   await logDoc.reference.update({
-      //     'exam_ids': FieldValue.arrayUnion([examId]),
-      //   });
-      // }
+      final userLogsRef = FirebaseFirestore.instance
+          .collection('user_logs')
+          .where('user_id', isEqualTo: userId)
+          .orderBy('login_time', descending: true)
+          .limit(1);
+      final snapshot = await userLogsRef.get();
+
+      if (snapshot.docs.isNotEmpty) {
+        var logDoc = snapshot.docs.first;
+        await logDoc.reference.update({
+          'exam_ids': FieldValue.arrayUnion([examId]),
+        });
+      }
 
       print("Đã ghi nhận lỗi: $violationType");
     } catch (e) {
