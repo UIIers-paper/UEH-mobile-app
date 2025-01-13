@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:mobile_device_identifier/mobile_device_identifier.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'dart:io';
 
@@ -45,6 +46,8 @@ class UserService {
       if (userId != null) {
         Map<String, dynamic> deviceData = await getDeviceInformation();
         String logId = DateTime.now().millisecondsSinceEpoch.toString();
+        await saveLogId(logId);
+        print("Log ID: $logId");
         await FirebaseFirestore.instance.collection('user_logs').add({
           'log_id': logId,
           'user_id': userId,
@@ -104,6 +107,33 @@ class UserService {
     } catch (e) {
       print("Lỗi khi ghi nhận vi phạm: $e");
     }
+  }
+
+  Future<void> updateLogoutTime() async {
+    try {
+      String? logId = await getLogId();
+      if (logId == null) {
+        print("logId không tồn tại");
+        return;
+      }
+      DateTime logoutTime = DateTime.now();
+      await FirebaseFirestore.instance.collection('user_logs').doc(logId).update({
+        'logout_time': logoutTime.toIso8601String(),
+      });
+      print("Logout time updated successfully.");
+    } catch (e) {
+      print("Error updating logout time: $e");
+    }
+  }
+
+  Future<void> saveLogId(String logId) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString('logId', logId);
+  }
+
+  Future<String?> getLogId() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString('logId');
   }
 
   Map<String, dynamic> _readAndroidBuildData(AndroidDeviceInfo build) {
