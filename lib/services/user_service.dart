@@ -48,7 +48,7 @@ class UserService {
         String logId = DateTime.now().millisecondsSinceEpoch.toString();
         await saveLogId(logId);
         print("Log ID: $logId");
-        await FirebaseFirestore.instance.collection('user_logs').add({
+        await FirebaseFirestore.instance.collection('user_logs').doc(logId).set({
           'log_id': logId,
           'user_id': userId,
           'device_id': deviceId,
@@ -117,6 +117,7 @@ class UserService {
         return;
       }
       DateTime logoutTime = DateTime.now();
+      
       await FirebaseFirestore.instance.collection('user_logs').doc(logId).update({
         'logout_time': logoutTime.toIso8601String(),
       });

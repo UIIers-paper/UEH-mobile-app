@@ -3,12 +3,14 @@ import 'package:ueh_mobile_app/utils/exports.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:flutter_web_auth_2/flutter_web_auth_2.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:ueh_mobile_app/services/user_service.dart';
 class AuthService {
   final clientId = dotenv.env['MICROSOFT_CLIENT_ID'];
   final tenantId = dotenv.env['MICROSOFT_TENANT_ID'];
   final redirectUri = dotenv.env['MICROSOFT_REDIRECT_URI'];
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FlutterSecureStorage _storage = FlutterSecureStorage();
+  final UserService _userService = UserService();
   final GoogleSignIn _googleSignIn = GoogleSignIn(
     clientId:
     dotenv.env['GOOGLE_CLIENT_ID'],
@@ -281,6 +283,8 @@ class AuthService {
 
   Future<void> logout(BuildContext context) async {
     try {
+      await _userService.updateLogoutTime();
+      await _storage.deleteAll();
       await FirebaseAuth.instance.signOut();
       Navigator.pushReplacementNamed(context, '/auth_home');
     } catch (e) {

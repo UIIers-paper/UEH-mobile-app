@@ -136,8 +136,7 @@ class _DashboardScreenState extends State<Dashboard> {
             ),
             ListTile(
               title: Text('Logout'),
-              onTap: () async{
-                await userService.updateLogoutTime();
+              onTap: () {
 
                 Navigator.pop(context);
                 AuthService().logout(context);
