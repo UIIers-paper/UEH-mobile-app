@@ -60,7 +60,7 @@ class _DoingExamScreenState extends State<DoingExamScreen> with WidgetsBindingOb
         context: context,
         isScrollControlled: true,
         builder: (context) => BottomAnswerWidget(
-          questions: questions,
+          numberOfQuestions: 40,
           currentQuestionIndex: currentQuestionIndex,
           selectedAnswer: selectedAnswer,
           onAnswerChanged: (value) {

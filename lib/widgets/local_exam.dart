@@ -7,7 +7,7 @@ class LocalHtmlViewer extends StatefulWidget {
 }
 
 class _LocalHtmlViewerState extends State<LocalHtmlViewer> {
-  late String localFilePath;
+  late String localFilePath='';
   late WebViewController controller;
   bool isLoading = true;
 

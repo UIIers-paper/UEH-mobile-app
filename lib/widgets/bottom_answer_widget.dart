@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 
 class BottomAnswerWidget extends StatefulWidget {
-  final List<String> questions;
+  final int numberOfQuestions;
   int currentQuestionIndex;
   String selectedAnswer;
   final Function(String?) onAnswerChanged;
   final VoidCallback onClose;
 
   BottomAnswerWidget({
-    required this.questions,
+    required this.numberOfQuestions,
     required this.currentQuestionIndex,
     required this.selectedAnswer,
     required this.onAnswerChanged,
@@ -20,32 +20,45 @@ class BottomAnswerWidget extends StatefulWidget {
 }
 
 class _BottomAnswerWidgetState extends State<BottomAnswerWidget> {
+  final int questionsPerPage = 5;
 
+  // Hàm này giúp lấy số lượng câu hỏi trên trang hiện tại
+  int _getStartIndexForPage() {
+    return (widget.currentQuestionIndex ~/ questionsPerPage) * questionsPerPage;
+  }
 
-  void _nextQuestion() {
-    if (widget.currentQuestionIndex < widget.questions.length - 1) {
+  // Hàm lấy các câu hỏi cho trang hiện tại
+  List<String> _getCurrentPageQuestions() {
+    int startIndex = _getStartIndexForPage();
+    int endIndex = startIndex + questionsPerPage;
+    List<String> questions = [];
+    for (int i = startIndex; i < endIndex && i < widget.numberOfQuestions; i++) {
+      questions.add('Câu hỏi ${i + 1}');
+    }
+    return questions;
+  }
+
+  void _nextPage() {
+    if (widget.currentQuestionIndex < widget.numberOfQuestions - questionsPerPage) {
       setState(() {
-        widget.currentQuestionIndex++;
+        widget.currentQuestionIndex += questionsPerPage;
         widget.selectedAnswer = "";
       });
     }
   }
 
-  void _previousQuestion() {
+  void _previousPage() {
     if (widget.currentQuestionIndex > 0) {
       setState(() {
-        widget.currentQuestionIndex--;
+        widget.currentQuestionIndex -= questionsPerPage;
         widget.selectedAnswer = "";
       });
     }
-  }
-
-  void _flagQuestion() {
-    print("Câu hỏi ${widget.currentQuestionIndex + 1} đã được đánh dấu.");
   }
 
   @override
   Widget build(BuildContext context) {
+    List<String> currentPageQuestions = _getCurrentPageQuestions();
     return FractionallySizedBox(
       heightFactor: 0.4,
       child: Padding(
@@ -53,48 +66,38 @@ class _BottomAnswerWidgetState extends State<BottomAnswerWidget> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  "${widget.questions[widget.currentQuestionIndex]}",
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                IconButton(
-                  icon: Icon(Icons.close),
-                  onPressed: widget.onClose,
-                ),
-              ],
+            Text(
+              "Trang ${widget.currentQuestionIndex ~/ questionsPerPage + 1}",
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+              ),
             ),
             Expanded(
               child: ListView(
                 children: [
-                  RadioListTile<String>(
-                    title: Text("A. Đáp án A"),
-                    value: "A",
-                    groupValue: widget.selectedAnswer,
-                    onChanged: widget.onAnswerChanged,
-                  ),
-                  RadioListTile<String>(
-                    title: Text("B. Đáp án B"),
-                    value: "B",
-                    groupValue: widget.selectedAnswer,
-                    onChanged: widget.onAnswerChanged,
-                  ),
-                  RadioListTile<String>(
-                    title: Text("C. Đáp án C"),
-                    value: "C",
-                    groupValue: widget.selectedAnswer,
-                    onChanged: widget.onAnswerChanged,
-                  ),
-                  RadioListTile<String>(
-                    title: Text("D. Đáp án D"),
-                    value: "D",
-                    groupValue: widget.selectedAnswer,
-                    onChanged: widget.onAnswerChanged,
+                  // Hiển thị câu hỏi theo hàng ngang
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      for (int i = 0; i < currentPageQuestions.length; i++)
+                        Column(
+                          children: [
+                            Text(
+                              currentPageQuestions[i],
+                              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                            ),
+                            // Các câu trả lời
+                            for (String option in ['A', 'B', 'C', 'D'])
+                              RadioListTile<String>(
+                                title: Text("$option. Đáp án $option"),
+                                value: option,
+                                groupValue: widget.selectedAnswer,
+                                onChanged: widget.onAnswerChanged,
+                              ),
+                          ],
+                        ),
+                    ],
                   ),
                 ],
               ),
@@ -104,15 +107,17 @@ class _BottomAnswerWidgetState extends State<BottomAnswerWidget> {
               children: [
                 IconButton(
                   icon: Icon(Icons.arrow_back),
-                  onPressed: () => _previousQuestion(),
+                  onPressed: widget.currentQuestionIndex > 0 ? _previousPage : null,
                 ),
                 IconButton(
                   icon: Icon(Icons.arrow_forward),
-                  onPressed: () => _nextQuestion(),
+                  onPressed: (widget.currentQuestionIndex + questionsPerPage) < widget.numberOfQuestions ? _nextPage : null,
                 ),
                 IconButton(
                   icon: Icon(Icons.flag),
-                  onPressed: () {},
+                  onPressed: () {
+                    print("Câu hỏi ${widget.currentQuestionIndex + 1} đã được đánh dấu.");
+                  },
                 ),
               ],
             ),
