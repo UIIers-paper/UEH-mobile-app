@@ -1,19 +1,20 @@
 import 'package:flutter/material.dart';
 
 class BottomAnswerWidget extends StatefulWidget {
-  final int numberOfQuestions;
-  int currentQuestionIndex;
-  String selectedAnswer;
+  final int currentQuestionIndex;
+  final String selectedAnswer;
   final Function(String?) onAnswerChanged;
   final VoidCallback onClose;
+  final int numberOfQuestions;
 
-  BottomAnswerWidget({
-    required this.numberOfQuestions,
+  const BottomAnswerWidget({
+    Key? key,
     required this.currentQuestionIndex,
     required this.selectedAnswer,
     required this.onAnswerChanged,
     required this.onClose,
-  });
+    required this.numberOfQuestions,
+  }) : super(key: key);
 
   @override
   _BottomAnswerWidgetState createState() => _BottomAnswerWidgetState();
@@ -21,103 +22,97 @@ class BottomAnswerWidget extends StatefulWidget {
 
 class _BottomAnswerWidgetState extends State<BottomAnswerWidget> {
   final int questionsPerPage = 5;
+  int currentPage = 0;
 
-  // Hàm này giúp lấy số lượng câu hỏi trên trang hiện tại
-  int _getStartIndexForPage() {
-    return (widget.currentQuestionIndex ~/ questionsPerPage) * questionsPerPage;
-  }
+  // Tính số lượng trang
+  int get totalPages => (widget.numberOfQuestions / questionsPerPage).ceil();
 
-  // Hàm lấy các câu hỏi cho trang hiện tại
-  List<String> _getCurrentPageQuestions() {
-    int startIndex = _getStartIndexForPage();
-    int endIndex = startIndex + questionsPerPage;
-    List<String> questions = [];
-    for (int i = startIndex; i < endIndex && i < widget.numberOfQuestions; i++) {
-      questions.add('Câu hỏi ${i + 1}');
-    }
-    return questions;
-  }
-
-  void _nextPage() {
-    if (widget.currentQuestionIndex < widget.numberOfQuestions - questionsPerPage) {
-      setState(() {
-        widget.currentQuestionIndex += questionsPerPage;
-        widget.selectedAnswer = "";
-      });
-    }
-  }
-
-  void _previousPage() {
-    if (widget.currentQuestionIndex > 0) {
-      setState(() {
-        widget.currentQuestionIndex -= questionsPerPage;
-        widget.selectedAnswer = "";
-      });
-    }
+  // Lấy danh sách câu hỏi trong trang hiện tại
+  List<int> getCurrentPageQuestions() {
+    int start = currentPage * questionsPerPage;
+    int end = start + questionsPerPage;
+    return List.generate(
+        end > widget.numberOfQuestions ? widget.numberOfQuestions - start : questionsPerPage,
+            (index) => start + index + 1);
   }
 
   @override
   Widget build(BuildContext context) {
-    List<String> currentPageQuestions = _getCurrentPageQuestions();
+    List<int> currentPageQuestions = getCurrentPageQuestions();
+
     return FractionallySizedBox(
       heightFactor: 0.4,
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
+      child: Container(
+        decoration: BoxDecoration(
+          color: Colors.grey[300],
+          borderRadius: BorderRadius.circular(16.0),
+        ),
+        padding: const EdgeInsets.all(10.0),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              "Trang ${widget.currentQuestionIndex ~/ questionsPerPage + 1}",
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
+            Align(
+              alignment: Alignment.topRight,
+              child: IconButton(
+                icon: Icon(Icons.close, color: Colors.redAccent),
+                onPressed: widget.onClose,
               ),
             ),
-            Expanded(
-              child: ListView(
-                children: [
-                  // Hiển thị câu hỏi theo hàng ngang
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      for (int i = 0; i < currentPageQuestions.length; i++)
-                        Column(
-                          children: [
-                            Text(
-                              currentPageQuestions[i],
-                              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
-                            ),
-                            // Các câu trả lời
-                            for (String option in ['A', 'B', 'C', 'D'])
-                              RadioListTile<String>(
-                                title: Text("$option. Đáp án $option"),
-                                value: option,
-                                groupValue: widget.selectedAnswer,
-                                onChanged: widget.onAnswerChanged,
-                              ),
-                          ],
-                        ),
-                    ],
-                  ),
-                ],
-              ),
+            // Hiển thị tiêu đề phân trang
+
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: currentPageQuestions.map((questionNumber) {
+                return Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      "Câu $questionNumber",
+                      style: const TextStyle(
+                          fontSize: 16, fontWeight: FontWeight.bold),
+                    ),
+                    for (String option in ['A', 'B', 'C', 'D'])
+                      Row(
+                        children: [
+                          Text(option, style: const TextStyle(fontSize: 14)),
+                          Radio<String>(
+                            value: option,
+                            groupValue: widget.selectedAnswer,
+                            onChanged: widget.onAnswerChanged,
+                          ),
+                        ],
+                      ),
+                  ],
+                );
+              }).toList(),
             ),
+            // const Spacer(),
+            // Điều hướng phân trang
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 IconButton(
-                  icon: Icon(Icons.arrow_back),
-                  onPressed: widget.currentQuestionIndex > 0 ? _previousPage : null,
+                  icon: const Icon(Icons.arrow_back),
+                  onPressed: currentPage > 0
+                      ? () {
+                    setState(() {
+                      currentPage--;
+                    });
+                  }
+                      : null,
+                ),
+                Text(
+                  "${currentPage + 1} / $totalPages",
+                  style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                 ),
                 IconButton(
-                  icon: Icon(Icons.arrow_forward),
-                  onPressed: (widget.currentQuestionIndex + questionsPerPage) < widget.numberOfQuestions ? _nextPage : null,
-                ),
-                IconButton(
-                  icon: Icon(Icons.flag),
-                  onPressed: () {
-                    print("Câu hỏi ${widget.currentQuestionIndex + 1} đã được đánh dấu.");
-                  },
+                  icon: const Icon(Icons.arrow_forward),
+                  onPressed: currentPage < totalPages - 1
+                      ? () {
+                    setState(() {
+                      currentPage++;
+                    });
+                  }
+                      : null,
                 ),
               ],
             ),
@@ -127,3 +122,5 @@ class _BottomAnswerWidgetState extends State<BottomAnswerWidget> {
     );
   }
 }
+
+
