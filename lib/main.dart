@@ -1,8 +1,6 @@
 import 'package:ueh_mobile_app/utils/exports.dart';
 import 'package:ueh_mobile_app/configs/routes.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:provider/provider.dart';
-import 'package:ueh_mobile_app/services/auth_service.dart';
 import 'package:ueh_mobile_app/database/local_database.dart';
 
 void main() async {

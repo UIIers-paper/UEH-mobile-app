@@ -1,11 +1,9 @@
-import 'package:flutter/material.dart';
-import 'package:curved_navigation_bar/curved_navigation_bar.dart';
+import 'package:ueh_mobile_app/utils/exports.dart';
 import 'package:ueh_mobile_app/screens/student/pages/exam_screen.dart';
 import 'package:ueh_mobile_app/screens/student/pages/home_screen.dart';
 import 'package:ueh_mobile_app/screens/student/pages/profile_screen.dart';
 import 'package:ueh_mobile_app/screens/student/pages/schedule_screen.dart';
-import 'package:ueh_mobile_app/services/auth_service.dart';
-import 'package:ueh_mobile_app/services/user_service.dart';
+
 class Dashboard extends StatefulWidget {
   @override
   _DashboardScreenState createState() => _DashboardScreenState();

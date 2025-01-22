@@ -1,6 +1,5 @@
 import 'package:ueh_mobile_app/utils/exports.dart';
 import 'package:ueh_mobile_app/widgets/text_field.dart';
-import 'package:ueh_mobile_app/services/auth_service.dart';
 
 class AccountLinkingContent extends StatelessWidget {
   final TextEditingController microsoftEmailController;

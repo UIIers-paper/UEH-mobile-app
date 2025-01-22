@@ -100,31 +100,28 @@ class _BottomAnswerWidgetState extends State<BottomAnswerWidget> {
                   "${currentPage + 1} / $totalPages",
                   style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                 ),
-                IconButton(
+                currentPage < totalPages - 1
+                    ? IconButton(
                   icon: const Icon(Icons.arrow_forward),
-                  onPressed: currentPage < totalPages - 1
-                      ? () {
+                  onPressed: () {
                     setState(() {
                       currentPage++;
                     });
-                  }
-                      : null,
+                  },
+                )
+                    : ElevatedButton(
+                  onPressed: widget.onFinish,
+                  child: Text("Finish"),
+                  style: ElevatedButton.styleFrom(
+                    padding: EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+                    backgroundColor: Colors.red,
+                  ),
                 ),
               ],
             ),
-            ElevatedButton(
-              onPressed: widget.onFinish,  // Gọi phương thức onFinish khi nhấn
-              child: Text("Kết thúc bài thi"),
-              style: ElevatedButton.styleFrom(
-                padding: EdgeInsets.symmetric(vertical: 10, horizontal: 20),
-                backgroundColor: Colors.red, // Màu đỏ để làm nổi bật
-              ),
-            )
           ],
         ),
       ),
     );
   }
 }
-
-

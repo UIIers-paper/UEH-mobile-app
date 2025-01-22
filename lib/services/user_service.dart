@@ -88,13 +88,8 @@ class UserService {
   }
 
 
-  Future<void> syncLogsToFirebase(bool Connection) async {
+  Future<void> syncLogsToFirebase() async {
     try {
-      if (!Connection) {
-        print("Không có mạng, không thể đồng bộ.");
-        return;
-      }
-
       final localDb = LocalDatabase();
       List<Map<String, dynamic>> unsyncedLogs = await localDb.getUnsyncedLogs();
 

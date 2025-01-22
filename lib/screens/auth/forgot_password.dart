@@ -1,5 +1,4 @@
 import 'package:ueh_mobile_app/utils/exports.dart';
-import 'package:ueh_mobile_app/services/auth_service.dart';
 
 class ForgotPassword extends StatelessWidget {
   final TextEditingController emailController = TextEditingController();

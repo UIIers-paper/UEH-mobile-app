@@ -1,11 +1,7 @@
-import 'package:flutter/material.dart';
 import 'package:ueh_mobile_app/configs/routes.dart';
 
 import 'package:ueh_mobile_app/utils/exports.dart';
 import 'package:ueh_mobile_app/widgets/social_button.dart';
-import 'package:ueh_mobile_app/services/auth_service.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:ueh_mobile_app/services/user_service.dart';
 
 class FormLogin extends StatefulWidget {
   @override

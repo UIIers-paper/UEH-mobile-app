@@ -1,9 +1,5 @@
 import 'package:ueh_mobile_app/utils/exports.dart';
-// import 'package:http/http.dart' as http;
-import 'package:google_sign_in/google_sign_in.dart';
-import 'package:flutter_web_auth_2/flutter_web_auth_2.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:ueh_mobile_app/services/user_service.dart';
+
 class AuthService {
   final clientId = dotenv.env['MICROSOFT_CLIENT_ID'];
   final tenantId = dotenv.env['MICROSOFT_TENANT_ID'];

@@ -12,6 +12,7 @@ class NetworkService {
     });
   }
 
+
   Future<bool> checkNetworkStatus() async {
     final connectivityResult = await Connectivity().checkConnectivity();
     return connectivityResult != ConnectivityResult.none;

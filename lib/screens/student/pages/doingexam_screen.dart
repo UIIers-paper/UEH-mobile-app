@@ -1,10 +1,6 @@
-import 'package:flutter/material.dart';
-// import 'package:flutter/foundation.dart'; // Import UniqueKey
+import 'package:ueh_mobile_app/utils/exports.dart';
 import 'package:ueh_mobile_app/widgets/bottom_answer_widget.dart';
-import 'package:connectivity_plus/connectivity_plus.dart';
-import 'package:ueh_mobile_app/services/network_service.dart';
 import 'package:ueh_mobile_app/widgets/local_exam.dart';
-import 'package:ueh_mobile_app/services/user_service.dart';
 class DoingExamScreen extends StatefulWidget {
   final VoidCallback onFinish;
 
