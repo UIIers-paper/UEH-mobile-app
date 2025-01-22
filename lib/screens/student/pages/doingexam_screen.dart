@@ -6,6 +6,9 @@ import 'package:ueh_mobile_app/services/network_service.dart';
 import 'package:ueh_mobile_app/widgets/local_exam.dart';
 import 'package:ueh_mobile_app/services/user_service.dart';
 class DoingExamScreen extends StatefulWidget {
+  final VoidCallback onFinish;
+
+  DoingExamScreen({required this.onFinish});
   @override
   _DoingExamScreenState createState() => _DoingExamScreenState();
 }
@@ -74,6 +77,7 @@ class _DoingExamScreenState extends State<DoingExamScreen> with WidgetsBindingOb
             });
             Navigator.pop(context);
           },
+          onFinish: widget.onFinish,
         ),
       );
     } else {

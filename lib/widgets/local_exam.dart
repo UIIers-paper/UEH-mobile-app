@@ -36,8 +36,8 @@ class _LocalHtmlViewerState extends State<LocalHtmlViewer> {
   Future<void> _loadHtmlFromAssets() async {
     try {
       final directory = await getTemporaryDirectory();
-      final filePath = '${directory.path}/exam.html';
-      final fileData = await DefaultAssetBundle.of(context).loadString('assets/html/exam.html');
+      final filePath = '${directory.path}/exam_img_binary.html';
+      final fileData = await DefaultAssetBundle.of(context).loadString('assets/html/exam_img_binary.html');
       final file = File(filePath);
       await file.writeAsString(fileData);
       setState(() {

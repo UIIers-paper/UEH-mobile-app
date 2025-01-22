@@ -51,6 +51,8 @@ dependencies:
   qr_flutter: ^4.0.0
   provider: ^6.1.2
   mobile_device_identifier: ^0.0.3
+  sqflite: ^2.4.1
+  path: ^1.9.0
 
 
 

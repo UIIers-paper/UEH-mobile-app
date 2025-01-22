@@ -3,7 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:mobile_device_identifier/mobile_device_identifier.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
+import 'package:ueh_mobile_app/database/local_database.dart';
 import 'dart:io';
 
 class UserService {
@@ -79,35 +79,53 @@ class UserService {
     try {
       String? userId = await getUserId();
       if (userId == null) return;
-      String examId = DateTime.now().millisecondsSinceEpoch.toString();
-      final docRef = FirebaseFirestore.instance.collection('exam_violations').doc(userId);
-      await docRef.set({
-        'exam_id': examId,
-        'user_id': userId,
-        'violations': {
-          violationType: FieldValue.increment(1),
-        },
-      }, SetOptions(merge: true));
-
-      final userLogsRef = FirebaseFirestore.instance
-          .collection('user_logs')
-          .where('user_id', isEqualTo: userId)
-          .orderBy('login_time', descending: true)
-          .limit(1);
-      final snapshot = await userLogsRef.get();
-
-      if (snapshot.docs.isNotEmpty) {
-        var logDoc = snapshot.docs.first;
-        await logDoc.reference.update({
-          'exam_ids': FieldValue.arrayUnion([examId]),
-        });
-      }
-
-      print("Đã ghi nhận lỗi: $violationType");
+      final localDb = LocalDatabase();
+      await localDb.insertLog(userId, violationType);
+      print("Log đã được ghi cục bộ: $violationType");
     } catch (e) {
-      print("Lỗi khi ghi nhận vi phạm: $e");
+      print("Lỗi khi ghi log cục bộ: $e");
     }
   }
+
+
+  Future<void> syncLogsToFirebase(bool Connection) async {
+    try {
+      if (!Connection) {
+        print("Không có mạng, không thể đồng bộ.");
+        return;
+      }
+
+      final localDb = LocalDatabase();
+      List<Map<String, dynamic>> unsyncedLogs = await localDb.getUnsyncedLogs();
+
+      if (unsyncedLogs.isEmpty) {
+        print("Không có log nào cần đồng bộ.");
+        return;
+      }
+
+      List<int> syncedLogIds = [];
+      for (var log in unsyncedLogs) {
+        try {
+          await FirebaseFirestore.instance.collection('exam_violations').add({
+            'user_id': log['user_id'],
+            'violation_type': log['violation_type'],
+            'timestamp': log['timestamp'],
+          });
+          syncedLogIds.add(log['id']);
+        } catch (e) {
+          print("Lỗi khi đồng bộ log: $e");
+        }
+      }
+
+      if (syncedLogIds.isNotEmpty) {
+        await localDb.markLogsAsSynced(syncedLogIds);
+        print("Đồng bộ thành công: ${syncedLogIds.length} log.");
+      }
+    } catch (e) {
+      print("Lỗi khi đồng bộ log: $e");
+    }
+  }
+
 
   Future<void> updateLogoutTime() async {
     try {

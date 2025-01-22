@@ -6,6 +6,7 @@ class BottomAnswerWidget extends StatefulWidget {
   final Function(String?) onAnswerChanged;
   final VoidCallback onClose;
   final int numberOfQuestions;
+  final VoidCallback onFinish;
 
   const BottomAnswerWidget({
     Key? key,
@@ -14,6 +15,7 @@ class BottomAnswerWidget extends StatefulWidget {
     required this.onAnswerChanged,
     required this.onClose,
     required this.numberOfQuestions,
+    required this.onFinish,
   }) : super(key: key);
 
   @override
@@ -23,11 +25,8 @@ class BottomAnswerWidget extends StatefulWidget {
 class _BottomAnswerWidgetState extends State<BottomAnswerWidget> {
   final int questionsPerPage = 5;
   int currentPage = 0;
-
-  // Tính số lượng trang
   int get totalPages => (widget.numberOfQuestions / questionsPerPage).ceil();
 
-  // Lấy danh sách câu hỏi trong trang hiện tại
   List<int> getCurrentPageQuestions() {
     int start = currentPage * questionsPerPage;
     int end = start + questionsPerPage;
@@ -57,7 +56,6 @@ class _BottomAnswerWidgetState extends State<BottomAnswerWidget> {
                 onPressed: widget.onClose,
               ),
             ),
-            // Hiển thị tiêu đề phân trang
 
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -85,8 +83,6 @@ class _BottomAnswerWidgetState extends State<BottomAnswerWidget> {
                 );
               }).toList(),
             ),
-            // const Spacer(),
-            // Điều hướng phân trang
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -116,6 +112,14 @@ class _BottomAnswerWidgetState extends State<BottomAnswerWidget> {
                 ),
               ],
             ),
+            ElevatedButton(
+              onPressed: widget.onFinish,  // Gọi phương thức onFinish khi nhấn
+              child: Text("Kết thúc bài thi"),
+              style: ElevatedButton.styleFrom(
+                padding: EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+                backgroundColor: Colors.red, // Màu đỏ để làm nổi bật
+              ),
+            )
           ],
         ),
       ),
