@@ -5,7 +5,7 @@ class NetworkService {
   Stream<ConnectivityResult> monitorNetwork() {
     return Connectivity().onConnectivityChanged.asyncExpand((connectivityList) {
       if (connectivityList.isNotEmpty) {
-        return Stream.value(connectivityList.first);
+        return Stream.value(connectivityList.last);
       } else {
         return Stream.value(ConnectivityResult.none);
       }

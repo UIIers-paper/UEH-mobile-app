@@ -24,7 +24,7 @@ class _ExamScreenState extends State<ExamScreen>{
 
     print("Wi-Fi enabled: $isWifiEnabled");
 
-    if (isWifiEnabled && !isAirplaneModeEnabled) {
+    if (isWifiEnabled || !isAirplaneModeEnabled) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('Bạn cần tắt Wi-Fi và bật chế độ máy bay để làm bài thi.'),

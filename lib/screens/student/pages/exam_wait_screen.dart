@@ -18,6 +18,8 @@ class _ExamWaitScreenState extends State<ExamWaitScreen> {
   void _monitorNetworkAndSyncLogs() async {
     bool isWifiEnabled = await networkService.checkNetworkStatus();
     if (isWifiEnabled) {
+      print("Wifi is enabled");
+      print(isWifiEnabled);
       await _syncLogsToFirebase();
     } else {
       networkService.monitorNetwork().listen((ConnectivityResult result) async {
