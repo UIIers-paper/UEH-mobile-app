@@ -16,6 +16,7 @@ class _DoingExamScreenState extends State<DoingExamScreen> with WidgetsBindingOb
   int currentQuestionIndex = 0;
   final List<String> questions = ["Câu hỏi 1", "Câu hỏi 2", "Câu hỏi 3"];
   String selectedAnswer = "";
+  bool isSubmitted = false;
 
   @override
   void initState() {
@@ -24,8 +25,8 @@ class _DoingExamScreenState extends State<DoingExamScreen> with WidgetsBindingOb
 
     networkService.monitorNetwork().listen((ConnectivityResult result) {
       if (result != ConnectivityResult.none) {
-        _lockExam();
-        _userLog.recordViolation("network");
+        _lockExam("network");
+        // _userLog.recordViolation("network");
       }
     });
   }
@@ -33,13 +34,15 @@ class _DoingExamScreenState extends State<DoingExamScreen> with WidgetsBindingOb
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     if (state == AppLifecycleState.paused) {
-      _lockExam();
-      _userLog.recordViolation("app_paused");
+      _lockExam("app_paused");
+      // _userLog.recordViolation("app_paused");
     }
   }
 
-  void _lockExam() {
+  void _lockExam(String error) {
+    if (isSubmitted) return;
     print("vi phạm");
+    _userLog.recordViolation(error);
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text('Bạn đã vi phạm quy chế thi'),
@@ -73,13 +76,22 @@ class _DoingExamScreenState extends State<DoingExamScreen> with WidgetsBindingOb
             });
             Navigator.pop(context);
           },
-          onFinish: widget.onFinish,
+          onFinish: _submitExam,
         ),
       );
     } else {
       Navigator.pop(context);
     }
   }
+
+  void _submitExam() {
+    setState(() {
+      isSubmitted = true;
+    });
+    widget.onFinish();
+    Navigator.pushNamedAndRemoveUntil(context, '/dashboard', (route) => false);
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -109,3 +121,5 @@ class _DoingExamScreenState extends State<DoingExamScreen> with WidgetsBindingOb
     super.dispose();
   }
 }
+
+

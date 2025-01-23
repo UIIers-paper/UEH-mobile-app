@@ -3,6 +3,10 @@ import 'package:ueh_mobile_app/screens/student/pages/exam_screen.dart';
 import 'package:ueh_mobile_app/screens/student/pages/home_screen.dart';
 import 'package:ueh_mobile_app/screens/student/pages/profile_screen.dart';
 import 'package:ueh_mobile_app/screens/student/pages/schedule_screen.dart';
+import 'dart:async';
+import 'package:ueh_mobile_app/providers/network_status_provider.dart';
+import 'package:ueh_mobile_app/providers/airplane_status_provider.dart';
+import 'package:provider/provider.dart';
 
 class Dashboard extends StatefulWidget {
   @override
@@ -12,6 +16,9 @@ class Dashboard extends StatefulWidget {
 class _DashboardScreenState extends State<Dashboard> {
   late List<Widget> _screens;
   final UserService userService = UserService();
+  final NetworkService networkService = NetworkService();
+  StreamSubscription<ConnectivityResult>? _subscription;
+  bool isInternetConnected = true;
 
   int _currentIndex = 0;
   GlobalKey<CurvedNavigationBarState> _bottomNavigationKey = GlobalKey();
@@ -22,6 +29,16 @@ class _DashboardScreenState extends State<Dashboard> {
   @override
   void initState() {
     super.initState();
+    _subscription= networkService.monitorNetwork().listen((ConnectivityResult result) {
+      print("Connection monitor: $result");
+      if (mounted) {
+        setState(() {
+          isInternetConnected = (result != ConnectivityResult.none);
+          context.read<NetworkStatusProvider>().updateNetworkStatus(result != ConnectivityResult.none);
+
+        });
+      }
+    });
     _initializeScreens();
   }
 
@@ -36,6 +53,14 @@ class _DashboardScreenState extends State<Dashboard> {
       _bodyContent = _screens[_currentIndex];
     });
   }
+
+  @override
+  void dispose() {
+    _subscription?.cancel();
+    super.dispose();
+  }
+
+
 
   @override
   Widget build(BuildContext context) {

@@ -2,6 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:ueh_mobile_app/configs/routes.dart';
 import 'package:ueh_mobile_app/services/network_service.dart';
 import 'package:ueh_mobile_app/screens/student/pages/doingexam_screen.dart';
+import 'dart:async';
+import 'package:ueh_mobile_app/utils/exports.dart';
+import 'package:ueh_mobile_app/providers/network_status_provider.dart';
+import 'package:ueh_mobile_app/providers/airplane_status_provider.dart';
+
+import 'package:provider/provider.dart';
+
 class ExamScreen extends StatefulWidget {
   @override
   _ExamScreenState createState() => _ExamScreenState();
@@ -11,19 +18,14 @@ class _ExamScreenState extends State<ExamScreen>{
   final NetworkService networkService = NetworkService();
 
 
-  @override
-  void initState() {
-    super.initState();
-  }
-
-  void _doExercise() async {
+  void _doExercise(bool isInternetConnected) async {
     print("Doing exercise...");
     bool isAirplaneModeEnabled = await networkService.isAirplaneModeEnabled();
-    print("Airplane mode enabled: $isAirplaneModeEnabled");
-    networkService.startMonitoring((isConnected) {
-      print("Connection status changed: $isConnected");
-      
-    if (isConnected || !isAirplaneModeEnabled) {
+    print("Connection: ${await networkService.checkNetworkStatus()}");
+
+  
+    print(isInternetConnected);
+    if (isInternetConnected || !isAirplaneModeEnabled) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('Bạn cần tắt Wi-Fi và bật chế độ máy bay để làm bài thi.'),
@@ -31,6 +33,7 @@ class _ExamScreenState extends State<ExamScreen>{
         ),
       );
     } else {
+      print('thi');
       Navigator.push(
         context,
         MaterialPageRoute(
@@ -40,12 +43,7 @@ class _ExamScreenState extends State<ExamScreen>{
         ),
       );
     }
-    });
-    
 
-    // bool isWifiEnabled = await networkService.checkNetworkStatus();
-
-    // print("Wi-Fi enabled: $isWifiEnabled");
 
   }
 
@@ -62,10 +60,15 @@ class _ExamScreenState extends State<ExamScreen>{
 
   @override
   Widget build(BuildContext context) {
+    final isConnected =
+        context.watch<NetworkStatusProvider>().isInternetConnected;
+    final isAirplaneModeEnabled = context.watch<AirplaneModeProvider>().isAirplaneModeEnabled;
+    print("Airplane mode, $isAirplaneModeEnabled");
+    print("Network, $isConnected");
     return Scaffold(
       body: Center(
         child: ElevatedButton(
-          onPressed: _doExercise,
+          onPressed: ()=>_doExercise(isConnected),
           child: Text("Làm bài thi"),
         ),
       ),

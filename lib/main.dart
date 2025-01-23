@@ -2,7 +2,8 @@ import 'package:ueh_mobile_app/utils/exports.dart';
 import 'package:ueh_mobile_app/configs/routes.dart';
 import 'package:provider/provider.dart';
 import 'package:ueh_mobile_app/database/local_database.dart';
-
+import 'package:ueh_mobile_app/providers/network_status_provider.dart';
+import 'package:ueh_mobile_app/providers/airplane_status_provider.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
@@ -16,9 +17,15 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiProvider(
         providers: [
-        Provider<AuthService>(
-        create: (_) => AuthService(),
-    ),
+          Provider<AuthService>(
+            create: (_) => AuthService(),
+          ),
+          ChangeNotifierProvider<NetworkStatusProvider>(
+            create: (_) => NetworkStatusProvider(),
+          ),
+          ChangeNotifierProvider<AirplaneModeProvider>(
+              create: (_) => AirplaneModeProvider()
+          ),
     ],
     child: MaterialApp(
       title: 'UEH demo app',
