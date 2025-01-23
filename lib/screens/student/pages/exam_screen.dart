@@ -17,16 +17,13 @@ class _ExamScreenState extends State<ExamScreen>{
   }
 
   void _doExercise() async {
-    networkService.startMonitoring();
     print("Doing exercise...");
     bool isAirplaneModeEnabled = await networkService.isAirplaneModeEnabled();
     print("Airplane mode enabled: $isAirplaneModeEnabled");
-
-    bool isWifiEnabled = await networkService.checkNetworkStatus();
-
-    print("Wi-Fi enabled: $isWifiEnabled");
-
-    if (isWifiEnabled || !isAirplaneModeEnabled) {
+    networkService.startMonitoring((isConnected) {
+      print("Connection status changed: $isConnected");
+      
+    if (isConnected || !isAirplaneModeEnabled) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('Bạn cần tắt Wi-Fi và bật chế độ máy bay để làm bài thi.'),
@@ -43,6 +40,13 @@ class _ExamScreenState extends State<ExamScreen>{
         ),
       );
     }
+    });
+    
+
+    // bool isWifiEnabled = await networkService.checkNetworkStatus();
+
+    // print("Wi-Fi enabled: $isWifiEnabled");
+
   }
 
   void _finishExercise() async{

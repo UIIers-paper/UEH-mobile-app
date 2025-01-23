@@ -3,34 +3,17 @@ import 'package:internet_connection_checker/internet_connection_checker.dart';
 import 'dart:async';
 class NetworkService {
   final StreamController<bool> _connectionController = StreamController<bool>.broadcast();
-  late StreamSubscription<List<ConnectivityResult>> _subscription;
-
-
+  late StreamSubscription<InternetConnectionStatus> _subscription;
 
 
 
   Stream<bool> get connectionStream => _connectionController.stream;
 
-  // void _startMonitoring() {
-  //   final connectionChecker = InternetConnectionChecker.instance;
-  //
-  //   final subscription = connectionChecker.onStatusChange.listen(
-  //         (InternetConnectionStatus status) {
-  //       if (status == InternetConnectionStatus.connected) {
-  //         print('Connected to the internet');
-  //       } else {
-  //         print('Disconnected from the internet');
-  //       }
-  //     },
-  //   );
-  //
-  //   _checkInitialConnection();
-  // }
 
   void startMonitoring(void Function(bool) onConnectionChange) {
     final connectionChecker = InternetConnectionChecker.instance;
 
-    final _subscription = connectionChecker.onStatusChange.listen(
+    _subscription = connectionChecker.onStatusChange.listen(
           (InternetConnectionStatus status) {
         bool isConnected = status == InternetConnectionStatus.connected;
         onConnectionChange(isConnected);

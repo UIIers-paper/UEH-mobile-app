@@ -16,18 +16,23 @@ class _ExamWaitScreenState extends State<ExamWaitScreen> {
   }
 
   void _monitorNetworkAndSyncLogs() async {
-    bool isWifiEnabled = await networkService.checkNetworkStatus();
-    if (isWifiEnabled) {
-      print("Wifi is enabled");
-      print(isWifiEnabled);
-      await _syncLogsToFirebase();
-    } else {
-      networkService.monitorNetwork().listen((ConnectivityResult result) async {
-        if (result != ConnectivityResult.none) {
-          await _syncLogsToFirebase();
-        }
-      });
-    }
+    // bool isWifiEnabled = await networkService.checkNetworkStatus();
+    networkService.startMonitoring((isConnected) async{
+      print("Connection status changed: $isConnected");
+      if (isConnected) {
+        print("Wifi is enabled");
+        print(isConnected);
+        await _syncLogsToFirebase();
+      } else {
+        print("Wifi is disabled");
+        networkService.monitorNetwork().listen((ConnectivityResult result) async {
+          if (result != ConnectivityResult.none) {
+            print("Connected to network");
+            await _syncLogsToFirebase();
+          }
+        });
+      }
+    });
   }
 
   Future<void> _syncLogsToFirebase() async {
