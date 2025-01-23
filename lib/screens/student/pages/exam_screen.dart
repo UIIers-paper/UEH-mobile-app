@@ -10,12 +10,14 @@ class ExamScreen extends StatefulWidget {
 class _ExamScreenState extends State<ExamScreen>{
   final NetworkService networkService = NetworkService();
 
+
   @override
   void initState() {
     super.initState();
   }
 
   void _doExercise() async {
+    networkService.startMonitoring();
     print("Doing exercise...");
     bool isAirplaneModeEnabled = await networkService.isAirplaneModeEnabled();
     print("Airplane mode enabled: $isAirplaneModeEnabled");
