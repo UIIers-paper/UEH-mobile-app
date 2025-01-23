@@ -1,8 +1,6 @@
 import 'package:ueh_mobile_app/configs/routes.dart';
 import 'package:ueh_mobile_app/utils/exports.dart';
-import 'package:ueh_mobile_app/utils/exports.dart';
 import 'package:ueh_mobile_app/providers/network_status_provider.dart';
-import 'package:ueh_mobile_app/providers/airplane_status_provider.dart';
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -18,6 +16,13 @@ class _ExamWaitScreenState extends State<ExamWaitScreen> {
   bool isInternetConnected = true;
   int countdown = 5;
   bool isLoading = true;
+  late Timer _networkCheckTimer;
+
+  @override
+  void initState() {
+    super.initState();
+    _startNetworkCheck(); 
+  }
 
 
   @override
@@ -31,13 +36,37 @@ class _ExamWaitScreenState extends State<ExamWaitScreen> {
     }
   }
 
+  void _startNetworkCheck() {
+    // Kiểm tra trạng thái mạng mỗi 5 giây
+    _networkCheckTimer = Timer.periodic(Duration(seconds: 5), (timer) async {
+      final isConnected =
+          Provider.of<NetworkStatusProvider>(context, listen: false)
+              .isInternetConnected;
+
+      _handleNetworkChange(isConnected);
+    });
+  }
+
+  void _handleNetworkChange(bool isConnected) async {
+    if (isConnected) {
+      print("WiFi is enabled");
+      await _syncLogsToFirebase();
+    } else {
+      print("WiFi is disabled");
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Bạn cần bật WiFi để hoàn tất nộp bài thi.'),
+          backgroundColor: Colors.yellow,
+        ),
+      );
+    }
+  }
+
   void _monitorNetworkAndSyncLogs(bool isConnected) async {
-    while (true) { 
       if (isConnected) {
         print("Wifi is enabled");
         print(isConnected);
         await _syncLogsToFirebase();
-        break;
       } else {
           print("Wifi is disabled");
           ScaffoldMessenger.of(context).showSnackBar(
@@ -52,7 +81,7 @@ class _ExamWaitScreenState extends State<ExamWaitScreen> {
             await _syncLogsToFirebase();
           }
       }
-    }
+    
     
   }
 
@@ -81,6 +110,12 @@ class _ExamWaitScreenState extends State<ExamWaitScreen> {
 
       _startCountdown();
     }
+  }
+
+  @override
+  void dispose() {
+    _networkCheckTimer.cancel(); 
+    super.dispose();
   }
 
   @override
