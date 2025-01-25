@@ -1,9 +1,7 @@
 import 'package:ueh_mobile_app/configs/routes.dart';
 import 'package:ueh_mobile_app/utils/exports.dart';
 import 'package:ueh_mobile_app/providers/network_status_provider.dart';
-import 'dart:async';
-import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
+
 class ExamWaitScreen extends StatefulWidget {
   @override
   _ExamWaitScreenState createState() => _ExamWaitScreenState();
@@ -12,7 +10,6 @@ class ExamWaitScreen extends StatefulWidget {
 class _ExamWaitScreenState extends State<ExamWaitScreen> {
   final NetworkService networkService = NetworkService();
   final UserService _userService = UserService();
-  // StreamSubscription<ConnectivityResult>? _subscription;
   bool isInternetConnected = true;
   int countdown = 5;
   bool isLoading = true;
@@ -37,7 +34,6 @@ class _ExamWaitScreenState extends State<ExamWaitScreen> {
   }
 
   void _startNetworkCheck() {
-    // Kiểm tra trạng thái mạng mỗi 5 giây
     _networkCheckTimer = Timer.periodic(Duration(seconds: 5), (timer) async {
       final isConnected =
           Provider.of<NetworkStatusProvider>(context, listen: false)
@@ -53,12 +49,17 @@ class _ExamWaitScreenState extends State<ExamWaitScreen> {
       await _syncLogsToFirebase();
     } else {
       print("WiFi is disabled");
+       SchedulerBinding.instance.addPostFrameCallback((_) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Bạn cần bật WiFi để hoàn tất nộp bài thi.'),
+          content: Text(
+            'Bạn cần bật wifi để hoàn tất nộp bài thi.',
+            style: TextStyle(color: Colors.black),
+          ),
           backgroundColor: Colors.yellow,
         ),
       );
+    });
     }
   }
 
@@ -69,12 +70,17 @@ class _ExamWaitScreenState extends State<ExamWaitScreen> {
         await _syncLogsToFirebase();
       } else {
           print("Wifi is disabled");
-          ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Bạn cần bật wifi để hoàn tất nộp bài thi.'),
-            backgroundColor: Colors.yellow,
-          ),
-        );
+              SchedulerBinding.instance.addPostFrameCallback((_) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text(
+                      'Bạn cần bật wifi để hoàn tất nộp bài thi.',
+                      style: TextStyle(color: Colors.black),
+                    ),
+                    backgroundColor: Colors.yellow,
+                  ),
+                );
+              });
           final isConnected = Provider.of<NetworkStatusProvider>(context, listen: true).isInternetConnected;
           if (isInternetConnected != isConnected) {
             isInternetConnected = isConnected;

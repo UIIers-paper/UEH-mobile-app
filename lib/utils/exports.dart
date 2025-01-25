@@ -1,12 +1,15 @@
 export 'dart:io';
 export 'dart:convert';
 export 'dart:typed_data';
+export 'dart:async';
+
 
 export 'package:flutter/material.dart';
 export 'package:flutter/scheduler.dart';
 export 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 export 'package:path_provider/path_provider.dart';
+export 'package:provider/provider.dart';
 export 'package:webview_flutter/webview_flutter.dart';
 export 'package:curved_navigation_bar/curved_navigation_bar.dart';
 
