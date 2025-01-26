@@ -91,7 +91,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             InkWell(
                               child: signUpContainer(st: "Sign Up"),
                               onTap: () {
-                                Navigator.pushReplacementNamed(context, '/face_login');
+                                Navigator.pushReplacementNamed(context, AppRoutes.formRegister);
                               },
                             ),
                             const SizedBox(
@@ -103,7 +103,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                     one: "Don’t have an account ? ", two: "LogIn"),
                               ),
                               onTap: () {
-                                Navigator.pushReplacementNamed(context, '/form_login');
+                                Navigator.pushReplacementNamed(context, AppRoutes.formLogin);
 
                               },
                             ),

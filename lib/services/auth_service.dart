@@ -57,7 +57,7 @@ class AuthService {
         return;
       }
       await _storage.write(key: 'idToken', value: idToken);
-      Navigator.pushReplacementNamed(context, '/dashboard');
+      Navigator.pushReplacementNamed(context, AppRoutes.dashboardScreen);
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text("Đăng nhập thành công!")),
       );
@@ -152,7 +152,7 @@ class AuthService {
     final idTokenResult = await user!.getIdTokenResult(true);
     final idToken = idTokenResult.token;
     await _storage.write(key: 'idToken', value: idToken);
-    Navigator.pushReplacementNamed(context, '/dashboard');
+    Navigator.pushReplacementNamed(context, AppRoutes.dashboardScreen);
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(content: Text("Đăng nhập thành công!")),
     );
@@ -164,7 +164,7 @@ class AuthService {
       final credential = PhoneAuthProvider.credential(
           verificationId: verificationId, smsCode: smsCode);
       await FirebaseAuth.instance.signInWithCredential(credential);
-      Navigator.pushReplacementNamed(context, '/dashboard');
+      Navigator.pushReplacementNamed(context, AppRoutes.dashboardScreen);
     } catch(e){
       print("Verification failed: $e");
     }
@@ -282,7 +282,7 @@ class AuthService {
       await _userService.updateLogoutTime();
       await _storage.deleteAll();
       await FirebaseAuth.instance.signOut();
-      Navigator.pushReplacementNamed(context, '/auth_home');
+      Navigator.pushReplacementNamed(context, AppRoutes.authHome);
     } catch (e) {
       print("Logout failed: $e");
     }
