@@ -74,7 +74,7 @@ class _HomeScreenState extends State<AuthHome> {
                                 onTap: () {
                                   print("Login with Email");
                                   Navigator.pushReplacementNamed(
-                                      context, '/form_login');
+                                      context, AppRoutes.formLogin);
                                 },
                                 child: Container(
                                   width: double.infinity,
@@ -101,7 +101,7 @@ class _HomeScreenState extends State<AuthHome> {
                               InkWell(
                                 onTap: () {
                                   Navigator.pushReplacementNamed(
-                                      context, '/register');
+                                      context, AppRoutes.formRegister);
                                 },
                                 child: Container(
                                   width: double.infinity,
@@ -137,7 +137,7 @@ class _HomeScreenState extends State<AuthHome> {
                             ),
                             onTap: () {
                               Navigator.pushReplacementNamed(
-                                  context, '/sign_up');
+                                  context, AppRoutes.formRegister);
                             },
                           ),
                         ],
