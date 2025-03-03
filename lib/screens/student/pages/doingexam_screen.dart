@@ -89,7 +89,7 @@ class _DoingExamScreenState extends State<DoingExamScreen> with WidgetsBindingOb
       isSubmitted = true;
     });
     widget.onFinish();
-    Navigator.pushNamedAndRemoveUntil(context, '/dashboard', (route) => false);
+    // Navigator.pushNamedAndRemoveUntil(context, '/dashboard', (route) => false);
   }
 
 

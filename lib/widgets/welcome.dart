@@ -1,6 +1,6 @@
-import 'package:flutter/material.dart';
-import 'dart:async';
+import 'package:ueh_mobile_app/utils/exports.dart';
 import 'slide_infopage.dart';
+
 class WelcomeScreen extends StatefulWidget {
   @override
   _WelcomeScreenState createState() => _WelcomeScreenState();
@@ -14,7 +14,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
     super.initState();
     Future.delayed(Duration(seconds: 10), () {
       if (mounted) {
-        Navigator.pushReplacementNamed(context, '/auth_home');
+        Navigator.pushReplacementNamed(context, AppRoutes.authHome);
       }
     });
     _pageController = PageController();

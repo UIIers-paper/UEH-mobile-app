@@ -1,4 +1,3 @@
-import 'package:ueh_mobile_app/configs/routes.dart';
 import 'package:ueh_mobile_app/utils/exports.dart';
 import 'package:ueh_mobile_app/providers/network_status_provider.dart';
 
@@ -95,7 +94,8 @@ class _ExamWaitScreenState extends State<ExamWaitScreen> {
     Timer.periodic(Duration(seconds: 1), (timer) {
       if (countdown == 0) {
         timer.cancel();
-        Navigator.pushNamed(context, AppRoutes.dashboardScreen);
+        // Navigator.pushNamed(context, AppRoutes.dashboardScreen);
+        Navigator.pushNamedAndRemoveUntil(context, AppRoutes.dashboardScreen, (route) => false);
       } else {
         setState(() {
           countdown--;

@@ -17,6 +17,7 @@ class AppRoutes {
   static const String forgotPassword = '/forgot_password';
   static const String resetPassword = '/reset_password';
   static const String formRegister = '/register';
+  static const String formSignup = '/sign_up';
   static const String dashboardScreen ='/dashboard';
   static const String profileScreen = '/profile';
   static const String homeScreen = '/home';
