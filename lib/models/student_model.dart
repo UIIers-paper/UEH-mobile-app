@@ -3,7 +3,7 @@ class StudentModel {
   final String name;
   final String email;
   final String phone;
-  final String majorId;
+  final String major;
   final String address;
   final String classId;
 
@@ -12,7 +12,7 @@ class StudentModel {
     required this.name,
     required this.email,
     required this.phone,
-    required this.majorId,
+    required this.major,
     required this.address,
     required this.classId,
   });
@@ -23,7 +23,7 @@ class StudentModel {
       name: json['name'],
       email: json['email'],
       phone: json['phone'],
-      majorId: json['majorId'],
+      major: json['major'],
       address: json['address'],
       classId: json['classId'],
     );
@@ -35,7 +35,7 @@ class StudentModel {
       'name': name,
       'email': email,
       'phone': phone,
-      'majorId': majorId,
+      'major': major,
       'address': address,
       'classId': classId,
     };
