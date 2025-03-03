@@ -1,4 +1,5 @@
 import 'package:ueh_mobile_app/models/exam_model.dart';
+import 'package:ueh_mobile_app/models/examViolations_model.dart';
 
 List<ExamModel> mockExams = [
   ExamModel(
@@ -24,5 +25,14 @@ List<ExamModel> mockExams = [
     limitTime: 90,
     date: "2025-03-11",
     duration: 90,
+  ),
+];
+
+
+List<ExamViolation> mockExamViolations = [
+  ExamViolation(
+    timestamp: "2025-01-22T12:14:07.250245",
+    userId: "IYuQjML740clgfbxjcWhuyYo8Y92",
+    violationType: "network",
   ),
 ];
