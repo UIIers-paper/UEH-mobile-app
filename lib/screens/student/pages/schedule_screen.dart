@@ -118,6 +118,14 @@ class _ScheduleState extends State<ScheduleScreen> {
         .parse(item.date)
         .weekday == selectedDayIndex).toList();
 
+    print('Daily schedule ${scheduleData.map((exam) => {
+  'examId': exam.examId,
+  'courseName': exam.courseName,
+  'subject': exam.subject,
+  'startTime': exam.startTime,
+  'date': exam.date,
+}).toList()}');
+
     Map<String, List<ExamModel>> classes = {};
     for (var item in dailySchedule) {
       if (!classes.containsKey(item.examId)) {
@@ -177,6 +185,7 @@ class _ScheduleState extends State<ScheduleScreen> {
             itemCount: classes.length,
             itemBuilder: (context, index) {
               String classObj = classes.keys.toList()[index];
+              print('classes ${classes}');
               var classSchedule = classes[classObj];
 
               String scheduleTime = classSchedule != null && classSchedule.isNotEmpty

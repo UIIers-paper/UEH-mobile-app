@@ -11,7 +11,7 @@ List<ExamModel> mockExams = [
     endTime: "10:00 AM",
     questionNumbers: 50,
     limitTime: 120,
-    date: "2025-03-10",
+    date: "2025-03-05",
     duration: 120,
   ),
   ExamModel(
@@ -23,7 +23,7 @@ List<ExamModel> mockExams = [
     endTime: "11:00 AM",
     questionNumbers: 40,
     limitTime: 90,
-    date: "2025-03-11",
+    date: "2025-03-04",
     duration: 90,
   ),
 ];
