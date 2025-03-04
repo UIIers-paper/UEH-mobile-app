@@ -9,7 +9,6 @@ class ScheduleScreen extends StatefulWidget {
 }
 
 class _ScheduleState extends State<ScheduleScreen> {
-  // final djangoService = DjangoService();
   int selectedDayIndex = 1;
   bool isLoading = true;
   List<DateTime> weekDates = [];
