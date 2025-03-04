@@ -1,6 +1,6 @@
 import 'package:ueh_mobile_app/utils/exports.dart';
-import 'package:ueh_mobile_app/widgets/bottom_answer_widget.dart';
-import 'package:ueh_mobile_app/widgets/local_exam.dart';
+import 'package:ueh_mobile_app/widgets/bottomAnswer_widget.dart';
+import 'package:ueh_mobile_app/widgets/localExam_widget.dart';
 class DoingExamScreen extends StatefulWidget {
   final VoidCallback onFinish;
 

@@ -1,7 +1,7 @@
 import 'package:ueh_mobile_app/configs/routes.dart';
 
 import 'package:ueh_mobile_app/utils/exports.dart';
-import 'package:ueh_mobile_app/widgets/social_button.dart';
+import 'package:ueh_mobile_app/widgets/socialButton_widget.dart';
 
 class FormLogin extends StatefulWidget {
   @override

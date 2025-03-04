@@ -1,5 +1,5 @@
 import 'package:ueh_mobile_app/utils/exports.dart';
-import 'slide_infopage.dart';
+import 'infoSlide_widget.dart';
 
 class WelcomeScreen extends StatefulWidget {
   @override

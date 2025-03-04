@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:ueh_mobile_app/models/exam_model.dart';
-import 'package:ueh_mobile_app/widgets/cardSchedule.dart';
+import 'package:ueh_mobile_app/widgets/cardSchedule_widget.dart';
 import 'package:ueh_mobile_app/data/exam_data.dart';
 class ScheduleScreen extends StatefulWidget {
   @override

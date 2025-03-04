@@ -1,7 +1,7 @@
 import 'package:ueh_mobile_app/utils/exports.dart';
 import 'package:ueh_mobile_app/widgets/profile_widget.dart';
-import 'package:flutter/material.dart';
-import 'package:ueh_mobile_app/widgets/account_linking.dart';
+import 'package:ueh_mobile_app/widgets/accountLinking_widget.dart';
+import 'package:ueh_mobile_app/data/student_data.dart';
 
 class ProfileScreen extends StatefulWidget {
   @override
@@ -28,12 +28,12 @@ class _ProfileState extends State<ProfileScreen> {
                   backgroundColor: Colors.grey[200],
                   child: CircleAvatar(
                     radius: 45,
-                    backgroundImage: AssetImage("assets/images/profile.png"),
+                    backgroundImage: AssetImage(student.imageUrl),
                   ),
                 ),
                 SizedBox(height: 10),
                 Text(
-                  "Loc Tan Dinh",
+                  student.name,
                   style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
                 ),
                 Text(

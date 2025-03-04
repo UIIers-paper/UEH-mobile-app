@@ -1,21 +1,20 @@
-import 'package:flutter/material.dart';
 import 'package:ueh_mobile_app/configs/routes.dart';
+import 'package:ueh_mobile_app/data/exam_data.dart';
 import 'package:ueh_mobile_app/services/network_service.dart';
 import 'package:ueh_mobile_app/screens/student/pages/doingexam_screen.dart';
-import 'dart:async';
 import 'package:ueh_mobile_app/utils/exports.dart';
 import 'package:ueh_mobile_app/providers/network_status_provider.dart';
-import 'package:ueh_mobile_app/providers/airplane_status_provider.dart';
-
-import 'package:provider/provider.dart';
+import 'package:ueh_mobile_app/models/exam_model.dart';
+import 'package:ueh_mobile_app/widgets/examCard_widget.dart';
 
 class ExamScreen extends StatefulWidget {
   @override
   _ExamScreenState createState() => _ExamScreenState();
 }
 
-class _ExamScreenState extends State<ExamScreen>{
+class _ExamScreenState extends State<ExamScreen> {
   final NetworkService networkService = NetworkService();
+  final List<ExamModel> examList = mockExams;
 
 
   void _doExercise(bool isInternetConnected) async {
@@ -23,12 +22,13 @@ class _ExamScreenState extends State<ExamScreen>{
     bool isAirplaneModeEnabled = await networkService.isAirplaneModeEnabled();
     print("Connection: ${await networkService.checkNetworkStatus()}");
 
-  
+
     print(isInternetConnected);
     if (isInternetConnected || !isAirplaneModeEnabled) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Bạn cần tắt Wi-Fi và bật chế độ máy bay để làm bài thi.'),
+          content: Text(
+              'Bạn cần tắt Wi-Fi và bật chế độ máy bay để làm bài thi.'),
           backgroundColor: Colors.red,
         ),
       );
@@ -37,41 +37,105 @@ class _ExamScreenState extends State<ExamScreen>{
       Navigator.push(
         context,
         MaterialPageRoute(
-          builder: (context) => DoingExamScreen(
-            onFinish: _finishExercise,
-          ),
+          builder: (context) =>
+              DoingExamScreen(
+                onFinish: _finishExercise,
+              ),
         ),
       );
     }
-
-
   }
 
-  void _finishExercise() async{
+  void _finishExercise() async {
     print("Finish exercise...");
     Navigator.pushNamed(
       context,
       AppRoutes.waitingScreen,
     );
-
   }
-
 
 
   @override
   Widget build(BuildContext context) {
-    final isConnected =
-        context.watch<NetworkStatusProvider>().isInternetConnected;
-    final isAirplaneModeEnabled = context.watch<AirplaneModeProvider>().isAirplaneModeEnabled;
-    print("Airplane mode, $isAirplaneModeEnabled");
-    print("Network, $isConnected");
-    return Scaffold(
-      body: Center(
-        child: ElevatedButton(
-          onPressed: ()=>_doExercise(isConnected),
-          child: Text("Làm bài thi"),
-        ),
-      ),
+    Map<String, List<ExamModel>> classesByDay = {};
+    examList.sort((a, b) => a.date.compareTo(b.date));
+    for (var examItem in examList) {
+      final day = _getDayOfWeek(examItem.date);
+      if (classesByDay[day] == null) {
+        classesByDay[day] = [];
+      }
+      classesByDay[day]!.add(examItem);
+    }
+
+    return ListView(
+      children: [
+        for (var day in classesByDay.keys)
+          _buildDaySection(day, classesByDay[day]!),
+      ],
     );
   }
 }
+
+String _getDayOfWeek(String dayTime) {
+  final days = [
+    'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'
+  ];
+  try {
+    DateTime date = DateTime.parse(dayTime);
+    int weekdayIndex = date.weekday;
+    return days[weekdayIndex - 1];
+  } catch (e) {
+    return 'Unknown';
+  }
+}
+
+
+
+Widget _buildDaySection(String day, List<ExamModel> exams) {
+  return Column(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+      Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Row(
+          children: [
+            SizedBox(width: 10,),
+            Text(
+              day,
+              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+            ),
+            Expanded(child: Divider(
+              color: Colors.grey,
+              thickness: 1,
+            )),
+          ],
+        ),
+      ),
+      for (var examItem in exams)
+        ExamCard(
+          classId: examItem.examId,
+          classCodeName: examItem.teacherName,
+          className: examItem.courseName,
+          dayTime: examItem.date,
+        ),
+    ],
+  );
+}
+
+
+
+
+// @override
+// Widget build(BuildContext context) {
+//   final isConnected =
+//       context.watch<NetworkStatusProvider>().isInternetConnected;
+//   return Scaffold(
+//     body: Center(
+//       child: ElevatedButton(
+//         onPressed: ()=>_doExercise(isConnected),
+//         child: Text("Làm bài thi"),
+//       ),
+//     ),
+//   );
+// }
+// }

@@ -3,10 +3,8 @@ import 'package:ueh_mobile_app/screens/student/pages/exam_screen.dart';
 import 'package:ueh_mobile_app/screens/student/pages/home_screen.dart';
 import 'package:ueh_mobile_app/screens/student/pages/profile_screen.dart';
 import 'package:ueh_mobile_app/screens/student/pages/schedule_screen.dart';
-import 'dart:async';
 import 'package:ueh_mobile_app/providers/network_status_provider.dart';
-import 'package:ueh_mobile_app/providers/airplane_status_provider.dart';
-import 'package:provider/provider.dart';
+import 'package:ueh_mobile_app/data/student_data.dart';
 
 class Dashboard extends StatefulWidget {
   @override
@@ -80,7 +78,7 @@ class _DashboardScreenState extends State<Dashboard> {
               },
               child: CircleAvatar(
                 radius: 20,
-                backgroundImage: AssetImage('assets/images/profile.png'),
+                backgroundImage: AssetImage(student.imageUrl),
               ),
             ),
             SizedBox(width: 12),
@@ -93,7 +91,7 @@ class _DashboardScreenState extends State<Dashboard> {
                   Row(
                     children: [
                       Text(
-                        "Hello",
+                        student.name,
                         style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Color(0xA0DAE4F5)),
                       ),
                       SizedBox(width: 8),
@@ -105,7 +103,7 @@ class _DashboardScreenState extends State<Dashboard> {
                     ],
                   ),
                   Text(
-                    "31221020226",
+                    student.studentId,
                     style: TextStyle(fontSize: 14, color: Colors.grey),
                   ),
                 ],

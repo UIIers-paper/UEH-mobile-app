@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:qr_flutter/qr_flutter.dart';
-import 'package:ueh_mobile_app/widgets/profile_detail_widget.dart';
+import 'package:ueh_mobile_app/widgets/profileDetail_widget.dart';
+import 'package:ueh_mobile_app/data/student_data.dart';
 
 class ProfileWidget extends StatelessWidget {
   @override
@@ -30,7 +31,7 @@ class ProfileWidget extends StatelessWidget {
                   ProfileDetailItem(
                     icon: Icons.calendar_month,
                     title: "Ngày sinh",
-                    value: "26/10/2004",
+                    value: student.birthdate,
                   ),
                   ProfileDetailItem(
                     icon: Icons.school,
@@ -40,12 +41,12 @@ class ProfileWidget extends StatelessWidget {
                   ProfileDetailItem(
                     icon: Icons.book,
                     title: "Khóa",
-                    value: "K48",
+                    value: student.course,
                   ),
                   ProfileDetailItem(
                     icon: Icons.email,
                     title: "Email",
-                    value: "locdinh.31221020226@st.ueh.edu.vn",
+                    value: student.email,
                   ),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -58,12 +59,12 @@ class ProfileWidget extends StatelessWidget {
                             ProfileDetailItem(
                               icon: Icons.phone,
                               title: "Mobile",
-                              value: "0938922810",
+                              value: student.phone,
                             ),
                             ProfileDetailItem(
                               icon: Icons.location_on,
                               title: "Nơi sinh",
-                              value: "Ho Chi Minh",
+                              value: student.address,
                             ),
                           ],
                         ),
@@ -78,7 +79,7 @@ class ProfileWidget extends StatelessWidget {
                           borderRadius: BorderRadius.circular(8),
                         ),
                         child: QrImageView(
-                          data: "31221020226",
+                          data: student.studentId,
                           version: QrVersions.auto,
                           size: 100,
                           gapless: false,
