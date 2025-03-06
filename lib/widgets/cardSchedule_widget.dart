@@ -1,5 +1,6 @@
-import 'package:flutter/material.dart';
-// import 'package:final_mobile_app/widgets/detailed_class.dart';
+import 'package:ueh_mobile_app/utils/exports.dart';
+import 'package:ueh_mobile_app/configs/routes.dart';
+
 final List<IconData> icons = [
   Icons.book,
   Icons.science,
@@ -110,17 +111,10 @@ Widget buildSubjectCard({
         ),
         onTap: onTap ??
                 () {
-              // Navigator.push(
-              //   context,
-              //   MaterialPageRoute(
-              //     builder: (context) => ClassDetailScreen(
-              //       class_id: classId,
-              //       subject: subjectName,
-              //       time: schoolTime,
-              //       location: room,
-              //     ),
-              //   ),
-              // );
+                  Navigator.pushNamed(
+                    context,
+                    AppRoutes.examScreen,
+                  );
             },
       ),
     ),

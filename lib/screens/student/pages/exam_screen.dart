@@ -55,87 +55,35 @@ class _ExamScreenState extends State<ExamScreen> {
   }
 
 
+
+
   @override
   Widget build(BuildContext context) {
-    Map<String, List<ExamModel>> classesByDay = {};
-    examList.sort((a, b) => a.date.compareTo(b.date));
-    for (var examItem in examList) {
-      final day = _getDayOfWeek(examItem.date);
-      if (classesByDay[day] == null) {
-        classesByDay[day] = [];
-      }
-      classesByDay[day]!.add(examItem);
-    }
-
-    return ListView(
-      children: [
-        for (var day in classesByDay.keys)
-          _buildDaySection(day, classesByDay[day]!),
-      ],
-    );
-  }
-}
-
-String _getDayOfWeek(String dayTime) {
-  final days = [
-    'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'
-  ];
-  try {
-    DateTime date = DateTime.parse(dayTime);
-    int weekdayIndex = date.weekday;
-    return days[weekdayIndex - 1];
-  } catch (e) {
-    return 'Unknown';
-  }
-}
-
-
-
-Widget _buildDaySection(String day, List<ExamModel> exams) {
-  return Column(
-    crossAxisAlignment: CrossAxisAlignment.start,
-    children: [
-      Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: Row(
-          children: [
-            SizedBox(width: 10,),
-            Text(
-              day,
-              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-            ),
-            Expanded(child: Divider(
-              color: Colors.grey,
-              thickness: 1,
-            )),
-          ],
+    final isConnected =
+        context.watch<NetworkStatusProvider>().isInternetConnected;
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(
+          "Bài Thi",
+          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Color(0xA0DAE4F5)),
+        ),
+        centerTitle: true,
+        backgroundColor: Colors.indigo, // Màu nền của AppBar
+      ),
+      body: Center(
+        child: ElevatedButton(
+          onPressed: ()=>_doExercise(isConnected),
+          child: Text("Làm bài thi"),
         ),
       ),
-      for (var examItem in exams)
-        ExamCard(
-          classId: examItem.examId,
-          classCodeName: examItem.teacherName,
-          className: examItem.courseName,
-          dayTime: examItem.date,
-        ),
-    ],
-  );
+    );
+  }
+
 }
 
 
 
 
-// @override
-// Widget build(BuildContext context) {
-//   final isConnected =
-//       context.watch<NetworkStatusProvider>().isInternetConnected;
-//   return Scaffold(
-//     body: Center(
-//       child: ElevatedButton(
-//         onPressed: ()=>_doExercise(isConnected),
-//         child: Text("Làm bài thi"),
-//       ),
-//     ),
-//   );
-// }
-// }
+
+
+

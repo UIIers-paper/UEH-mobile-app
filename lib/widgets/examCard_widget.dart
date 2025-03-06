@@ -1,6 +1,6 @@
-import 'dart:math'; // For generating random values
+import 'dart:math';
 import 'package:flutter/material.dart';
-// import 'package:final_mobile_app/widgets/detailed_class.dart';
+import 'package:ueh_mobile_app/configs/routes.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 class ExamCard extends StatelessWidget {
@@ -49,20 +49,11 @@ class ExamCard extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
       child: GestureDetector(
         onTap: () async {
-          final intRole = await _getRole();
-          if (intRole == 1) {
-            // Navigator.push(
-            //   context,
-            //   MaterialPageRoute(
-            //     builder: (context) => ClassDetailScreen(
-            //       class_id: classId,
-            //       subject: className,
-            //       time: dayTime,
-            //       location: classCodeName,
-            //     ),
-            //   ),
-            // );
-          }
+          Navigator.pushNamed(
+            context,
+            AppRoutes.examScreen,
+          );
+
         },
         child: Container(
           decoration: BoxDecoration(

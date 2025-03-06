@@ -1,5 +1,5 @@
 import 'package:ueh_mobile_app/utils/exports.dart';
-import 'package:ueh_mobile_app/screens/student/pages/exam_screen.dart';
+import 'package:ueh_mobile_app/screens/student/pages/exam_list_screen.dart';
 import 'package:ueh_mobile_app/screens/student/pages/home_screen.dart';
 import 'package:ueh_mobile_app/screens/student/pages/profile_screen.dart';
 import 'package:ueh_mobile_app/screens/student/pages/schedule_screen.dart';
@@ -44,7 +44,7 @@ class _DashboardScreenState extends State<Dashboard> {
     _screens = [
       HomeScreen(),
       ScheduleScreen(),
-      ExamScreen(),
+      ExamListScreen(),
       ProfileScreen(),
     ];
     setState(() {
