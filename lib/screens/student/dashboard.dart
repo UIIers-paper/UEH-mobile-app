@@ -1,4 +1,6 @@
+// import 'package:ueh_mobile_app/models/student_model.dart';
 import 'package:ueh_mobile_app/utils/exports.dart';
+import 'package:ueh_mobile_app/services/api_service.dart';
 import 'package:ueh_mobile_app/screens/student/pages/exam_list_screen.dart';
 import 'package:ueh_mobile_app/screens/student/pages/home_screen.dart';
 import 'package:ueh_mobile_app/screens/student/pages/profile_screen.dart';
@@ -17,6 +19,9 @@ class _DashboardScreenState extends State<Dashboard> {
   final NetworkService networkService = NetworkService();
   StreamSubscription<ConnectivityResult>? _subscription;
   bool isInternetConnected = true;
+  bool _isLoading = true;
+  // late StudentModel student;
+  Map<String, dynamic>? _examData;
 
   int _currentIndex = 0;
   GlobalKey<CurvedNavigationBarState> _bottomNavigationKey = GlobalKey();
@@ -38,6 +43,22 @@ class _DashboardScreenState extends State<Dashboard> {
       }
     });
     _initializeScreens();
+    _fetchData();
+  }
+
+  Future<void> _fetchData() async {
+    try {
+      final apiService = ApiService("$dotenv.env['API_URL']/student");
+      final examData = await apiService.fetchExamData();
+
+      setState(() {
+        _examData = examData;
+        _isLoading = false;
+      });
+    } catch (e) {
+      setState(() => _isLoading = false);
+      print('Error: $e');
+    }
   }
 
   void _initializeScreens() {

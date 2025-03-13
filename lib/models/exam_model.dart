@@ -9,6 +9,7 @@ class ExamModel {
   int limitTime;
   String date;
   int duration;
+  String content;
 
   ExamModel({
     required this.examId,
@@ -21,6 +22,7 @@ class ExamModel {
     required this.limitTime,
     required this.date,
     required this.duration,
+    required this.content,
   });
 
   factory ExamModel.fromJson(Map<String, dynamic> json) {
@@ -35,6 +37,7 @@ class ExamModel {
       limitTime: json['limitTime'],
       date: json['date'],
       duration: json['duration'],
+      content: json['content'],
     );
   }
 
@@ -50,6 +53,7 @@ class ExamModel {
       'limitTime': limitTime,
       'date': date,
       'duration': duration,
+      'content': content,
     };
   }
 }

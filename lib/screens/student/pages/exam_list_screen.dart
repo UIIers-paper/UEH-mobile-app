@@ -1,6 +1,6 @@
 import 'package:ueh_mobile_app/configs/routes.dart';
 import 'package:ueh_mobile_app/data/exam_data.dart';
-import 'package:ueh_mobile_app/services/network_service.dart';
+import 'package:ueh_mobile_app/services/api_service.dart';
 import 'package:ueh_mobile_app/screens/student/pages/doingexam_screen.dart';
 import 'package:ueh_mobile_app/utils/exports.dart';
 import 'package:ueh_mobile_app/models/exam_model.dart';
@@ -14,6 +14,32 @@ class ExamListScreen extends StatefulWidget {
 class _ExamScreenState extends State<ExamListScreen> {
   final NetworkService networkService = NetworkService();
   final List<ExamModel> examList = mockExams;
+  bool _isLoading = true;
+  // late StudentModel student;
+  Map<String, dynamic>? _examData;
+
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchData();
+  }
+
+
+  Future<void> _fetchData() async {
+    try {
+      final apiService = ApiService("$dotenv.env['API_URL']/student");
+      final examData = await apiService.fetchExamData();
+
+      setState(() {
+        _examData = examData;
+        _isLoading = false;
+      });
+    } catch (e) {
+      setState(() => _isLoading = false);
+      print('Error: $e');
+    }
+  }
 
 
   void _doExercise(bool isInternetConnected) async {

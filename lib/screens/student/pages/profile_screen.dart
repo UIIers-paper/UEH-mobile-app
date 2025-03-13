@@ -2,6 +2,7 @@ import 'package:ueh_mobile_app/utils/exports.dart';
 import 'package:ueh_mobile_app/widgets/profile_widget.dart';
 import 'package:ueh_mobile_app/widgets/accountLinking_widget.dart';
 import 'package:ueh_mobile_app/data/student_data.dart';
+import 'package:ueh_mobile_app/services/api_service.dart';
 
 class ProfileScreen extends StatefulWidget {
   @override
@@ -12,6 +13,30 @@ class _ProfileState extends State<ProfileScreen> {
   String selectedContent = "Profile";
   final TextEditingController _microsoftEmailController = TextEditingController();
   final TextEditingController _googleEmailController = TextEditingController();
+  bool _isLoading = true;
+  // late StudentModel student;
+  Map<String, dynamic>? _examData;
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchData();
+  }
+
+  Future<void> _fetchData() async {
+    try {
+      final apiService = ApiService("$dotenv.env['API_URL']/student");
+      final examData = await apiService.fetchExamData();
+
+      setState(() {
+        _examData = examData;
+        _isLoading = false;
+      });
+    } catch (e) {
+      setState(() => _isLoading = false);
+      print('Error: $e');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
