@@ -1,8 +1,8 @@
 import 'package:ueh_mobile_app/models/exam_model.dart';
 import 'package:ueh_mobile_app/models/examViolations_model.dart';
 
-List<ExamModel> mockExams = [
-  ExamModel(
+List<ExamList> mockExams = [
+  ExamList(
     examId: "E001",
     teacherName: "Mr. John Doe",
     courseName: "Mathematics 101",
@@ -14,7 +14,7 @@ List<ExamModel> mockExams = [
     date: "2025-03-05",
     duration: 120,
   ),
-  ExamModel(
+  ExamList(
     examId: "E002",
     teacherName: "Ms. Jane Smith",
     courseName: "Physics 102",

@@ -12,7 +12,7 @@ class _ScheduleState extends State<ScheduleScreen> {
   int selectedDayIndex = 1;
   bool isLoading = true;
   List<DateTime> weekDates = [];
-  List<ExamModel> scheduleData = mockExams;
+  List<ExamList> scheduleData = mockExams;
   List<IconData> myCustomIcons = [
     Icons.book,
     Icons.science,
@@ -126,7 +126,7 @@ class _ScheduleState extends State<ScheduleScreen> {
   'date': exam.date,
 }).toList()}');
 
-    Map<String, List<ExamModel>> classes = {};
+    Map<String, List<ExamList>> classes = {};
     for (var item in dailySchedule) {
       if (!classes.containsKey(item.examId)) {
         classes[item.examId] = [];

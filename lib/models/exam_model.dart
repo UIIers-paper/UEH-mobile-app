@@ -1,4 +1,4 @@
-class ExamModel {
+class ExamList {
   String examId;
   String teacherName;
   String courseName;
@@ -9,9 +9,8 @@ class ExamModel {
   int limitTime;
   String date;
   int duration;
-  String content;
 
-  ExamModel({
+  ExamList({
     required this.examId,
     required this.teacherName,
     required this.courseName,
@@ -22,11 +21,10 @@ class ExamModel {
     required this.limitTime,
     required this.date,
     required this.duration,
-    required this.content,
   });
 
-  factory ExamModel.fromJson(Map<String, dynamic> json) {
-    return ExamModel(
+  factory ExamList.fromJson(Map<String, dynamic> json) {
+    return ExamList(
       examId: json['examId'],
       teacherName: json['teacherName'],
       courseName: json['courseName'],
@@ -37,8 +35,11 @@ class ExamModel {
       limitTime: json['limitTime'],
       date: json['date'],
       duration: json['duration'],
-      content: json['content'],
     );
+  }
+
+  static List<ExamList> examListFromJson(List<dynamic> jsonList) {
+    return jsonList.map((json) => ExamList.fromJson(json)).toList();
   }
 
   Map<String, dynamic> toJson() {
@@ -52,7 +53,30 @@ class ExamModel {
       'questionNumbers': questionNumbers,
       'limitTime': limitTime,
       'date': date,
-      'duration': duration,
+      'duration': duration
+    };
+  }
+}
+
+class ExamItem {
+  DateTime datetime;
+  String content;
+
+  ExamItem({
+    required this.datetime,
+    required this.content,
+  });
+
+  factory ExamItem.fromJson(Map<String, dynamic> json) {
+    return ExamItem(
+      datetime: json['datetime'],
+      content: json['content'],
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'datetime': datetime,
       'content': content,
     };
   }

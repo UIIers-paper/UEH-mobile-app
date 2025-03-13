@@ -3,6 +3,7 @@ import 'package:ueh_mobile_app/widgets/profile_widget.dart';
 import 'package:ueh_mobile_app/widgets/accountLinking_widget.dart';
 import 'package:ueh_mobile_app/data/student_data.dart';
 import 'package:ueh_mobile_app/services/api_service.dart';
+import 'package:ueh_mobile_app/models/student_model.dart';
 
 class ProfileScreen extends StatefulWidget {
   @override
@@ -15,7 +16,7 @@ class _ProfileState extends State<ProfileScreen> {
   final TextEditingController _googleEmailController = TextEditingController();
   bool _isLoading = true;
   // late StudentModel student;
-  Map<String, dynamic>? _examData;
+  StudentModel? _studentData;
 
   @override
   void initState() {
@@ -25,11 +26,11 @@ class _ProfileState extends State<ProfileScreen> {
 
   Future<void> _fetchData() async {
     try {
-      final apiService = ApiService("$dotenv.env['API_URL']/student");
-      final examData = await apiService.fetchExamData();
+      final apiService = ApiService("${dotenv.env['API_URL']}/students/3122102001");
+      final studentData = await apiService.fetchData(((json) => StudentModel.fromJson(json)));
 
       setState(() {
-        _examData = examData;
+        _studentData = studentData;
         _isLoading = false;
       });
     } catch (e) {

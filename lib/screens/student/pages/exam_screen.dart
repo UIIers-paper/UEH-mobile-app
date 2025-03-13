@@ -15,35 +15,7 @@ class ExamScreen extends StatefulWidget {
 
 class _ExamScreenState extends State<ExamScreen> {
   final NetworkService networkService = NetworkService();
-  final List<ExamModel> examList = mockExams;
-  bool _isLoading = true;
   // late StudentModel student;
-  Map<String, dynamic>? _examData;
-
-  @override
-  void initState() {
-    super.initState();
-    _fetchData();
-  }
-
-  Future<void> _fetchData() async {
-    try {
-      final apiService = ApiService("$dotenv.env['API_URL']/student");
-      final examData = await apiService.fetchExamData();
-
-      setState(() {
-        _examData = examData;
-        _isLoading = false;
-      });
-    } catch (e) {
-      setState(() => _isLoading = false);
-      print('Error: $e');
-    }
-  }
-
-  
-
-
   void _doExercise(bool isInternetConnected) async {
     print("Doing exercise...");
     bool isAirplaneModeEnabled = await networkService.isAirplaneModeEnabled();

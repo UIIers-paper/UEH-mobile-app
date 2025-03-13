@@ -1,4 +1,6 @@
 // import 'package:ueh_mobile_app/models/student_model.dart';
+import 'package:ueh_mobile_app/data/student_data.dart';
+import 'package:ueh_mobile_app/models/exam_model.dart';
 import 'package:ueh_mobile_app/utils/exports.dart';
 import 'package:ueh_mobile_app/services/api_service.dart';
 import 'package:ueh_mobile_app/screens/student/pages/exam_list_screen.dart';
@@ -6,7 +8,8 @@ import 'package:ueh_mobile_app/screens/student/pages/home_screen.dart';
 import 'package:ueh_mobile_app/screens/student/pages/profile_screen.dart';
 import 'package:ueh_mobile_app/screens/student/pages/schedule_screen.dart';
 import 'package:ueh_mobile_app/providers/network_status_provider.dart';
-import 'package:ueh_mobile_app/data/student_data.dart';
+// import 'package:ueh_mobile_app/data/student_data.dart';
+import 'package:ueh_mobile_app/models/student_model.dart  ';
 
 class Dashboard extends StatefulWidget {
   @override
@@ -21,7 +24,7 @@ class _DashboardScreenState extends State<Dashboard> {
   bool isInternetConnected = true;
   bool _isLoading = true;
   // late StudentModel student;
-  Map<String, dynamic>? _examData;
+  StudentModel? _student;
 
   int _currentIndex = 0;
   GlobalKey<CurvedNavigationBarState> _bottomNavigationKey = GlobalKey();
@@ -48,11 +51,12 @@ class _DashboardScreenState extends State<Dashboard> {
 
   Future<void> _fetchData() async {
     try {
-      final apiService = ApiService("$dotenv.env['API_URL']/student");
-      final examData = await apiService.fetchExamData();
+      final apiService = ApiService("${dotenv.env['API_URL']}/students/3122102001");
+      final StudentModel examData = await apiService.fetchData(((json) => StudentModel.fromJson(json)));
+
 
       setState(() {
-        _examData = examData;
+        _student = examData;
         _isLoading = false;
       });
     } catch (e) {
@@ -99,7 +103,7 @@ class _DashboardScreenState extends State<Dashboard> {
               },
               child: CircleAvatar(
                 radius: 20,
-                backgroundImage: AssetImage(student.imageUrl),
+                backgroundImage: AssetImage(_student?.imageUrl ?? student.imageUrl),
               ),
             ),
             SizedBox(width: 12),
@@ -112,7 +116,7 @@ class _DashboardScreenState extends State<Dashboard> {
                   Row(
                     children: [
                       Text(
-                        student.name,
+                        _student?.name ?? student.name,
                         style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Color(0xA0DAE4F5)),
                       ),
                       SizedBox(width: 8),
@@ -124,7 +128,7 @@ class _DashboardScreenState extends State<Dashboard> {
                     ],
                   ),
                   Text(
-                    student.studentId,
+                    _student?.studentId ?? student.studentId,
                     style: TextStyle(fontSize: 14, color: Colors.grey),
                   ),
                 ],
@@ -146,10 +150,10 @@ class _DashboardScreenState extends State<Dashboard> {
               decoration: BoxDecoration(
                 color: Colors.indigo,
               ),
-              accountName: Text("Loc Dinh"),
-              accountEmail: Text("31221020226"),
+              accountName: Text(_student?.name ?? student.name),
+              accountEmail: Text(_student?.studentId ?? student.studentId),
               currentAccountPicture: CircleAvatar(
-                backgroundImage: AssetImage('assets/images/profile.png'),
+                backgroundImage: AssetImage(_student?.imageUrl ?? student.imageUrl),
               ),
             ),
             ListTile(

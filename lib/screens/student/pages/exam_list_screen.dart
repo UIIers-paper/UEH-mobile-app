@@ -13,10 +13,9 @@ class ExamListScreen extends StatefulWidget {
 
 class _ExamScreenState extends State<ExamListScreen> {
   final NetworkService networkService = NetworkService();
-  final List<ExamModel> examList = mockExams;
+  List<ExamList>? _examData;
   bool _isLoading = true;
   // late StudentModel student;
-  Map<String, dynamic>? _examData;
 
 
   @override
@@ -28,8 +27,8 @@ class _ExamScreenState extends State<ExamListScreen> {
 
   Future<void> _fetchData() async {
     try {
-      final apiService = ApiService("$dotenv.env['API_URL']/student");
-      final examData = await apiService.fetchExamData();
+      final apiService = ApiService("$dotenv.env['API_URL']/exams");
+      final List<ExamList> examData = await apiService.fetchDataList<List<ExamList>>((json) => ExamList.examListFromJson(json));
 
       setState(() {
         _examData = examData;
@@ -82,7 +81,8 @@ class _ExamScreenState extends State<ExamListScreen> {
 
   @override
   Widget build(BuildContext context) {
-    Map<String, List<ExamModel>> classesByDay = {};
+    final List<ExamList> examList = _examData ?? mockExams;
+    Map<String, List<ExamList>> classesByDay = {};
     examList.sort((a, b) => a.date.compareTo(b.date));
     for (var examItem in examList) {
       final day = _getDayOfWeek(examItem.date);
@@ -116,7 +116,7 @@ String _getDayOfWeek(String dayTime) {
 
 
 
-Widget _buildDaySection(String day, List<ExamModel> exams) {
+Widget _buildDaySection(String day, List<ExamList> exams) {
   return Column(
     crossAxisAlignment: CrossAxisAlignment.start,
     children: [
@@ -148,19 +148,3 @@ Widget _buildDaySection(String day, List<ExamModel> exams) {
 }
 
 
-
-
-// @override
-// Widget build(BuildContext context) {
-//   final isConnected =
-//       context.watch<NetworkStatusProvider>().isInternetConnected;
-//   return Scaffold(
-//     body: Center(
-//       child: ElevatedButton(
-//         onPressed: ()=>_doExercise(isConnected),
-//         child: Text("Làm bài thi"),
-//       ),
-//     ),
-//   );
-// }
-// }
