@@ -159,19 +159,16 @@ class _DashboardScreenState extends State<Dashboard> {
             ListTile(
               title: Text('News'),
               onTap: () {
-                // Implement action
               },
             ),
             ListTile(
               title: Text('Schedule'),
               onTap: () {
-                // Implement action
               },
             ),
             ListTile(
               title: Text('Chat'),
               onTap: () {
-                // Implement action
               },
             ),
             ListTile(
