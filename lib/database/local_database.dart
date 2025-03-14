@@ -22,14 +22,20 @@ class LocalDatabase {
     return openDatabase(
       path,
       version: 1,
-      onCreate: (db, version) {
-        return db.execute('''
+      onCreate: (db, version) async {
+        await db.execute('''
           CREATE TABLE logs (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             user_id TEXT,
             violation_type TEXT,
             timestamp TEXT,
             synced INTEGER DEFAULT 0
+          )
+        ''');
+        await db.execute('''
+          CREATE TABLE exam_keys (
+            file_name TEXT PRIMARY KEY,
+            encryption_key TEXT
           )
         ''');
       },
@@ -55,4 +61,27 @@ class LocalDatabase {
     final db = await database;
     await db.update('logs', {'synced': 1}, where: 'id IN (${logIds.join(",")})');
   }
+
+  Future<void> saveEncryptionKey(String fileName, String key) async {
+    final db = await database;
+    await db.insert(
+      'exam_keys',
+      {'file_name': fileName, 'encryption_key': key},
+      conflictAlgorithm: ConflictAlgorithm.replace,
+    );
+  }
+
+  Future<String?> getEncryptionKey(String fileName) async {
+    final db = await database;
+    final result = await db.query(
+      'exam_keys',
+      where: 'file_name = ?',
+      whereArgs: [fileName],
+    );
+    if (result.isNotEmpty) {
+      return result.first['encryption_key'] as String;
+    }
+    return null;
+  }
+
 }

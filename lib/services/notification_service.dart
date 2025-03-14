@@ -1,5 +1,6 @@
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:ueh_mobile_app/services/file_service.dart';
+import 'package:flutter/widgets.dart';
 
 class NotificationService {
   final FileService _fileService = FileService();
@@ -28,14 +29,25 @@ class NotificationService {
   }
 
   static Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
+    WidgetsFlutterBinding.ensureInitialized();
     print("Handling background message...");
-    final content = message.data['content'];
-    if (content != null) {
+    try {
+      final content = message.data['content'];
+      if (content == null || content.isEmpty) {
+        print("Received empty content, skipping.");
+        return;
+      }
+
       final fileService = FileService();
       final fileName = 'exam.html';
+      final encryptedFileName = '$fileName.enc';
+
       final originalFilePath = await fileService.saveHtmlToFile(content, fileName);
-      await fileService.encryptHtmlFile(originalFilePath, '$fileName.enc');
+      await fileService.encryptHtmlFile(originalFilePath, encryptedFileName);
+
       print('Exam data saved and encrypted in background.');
+    } catch (e) {
+      print("Error handling background message: $e");
     }
   }
 }
