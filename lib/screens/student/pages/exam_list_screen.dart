@@ -1,17 +1,15 @@
-import 'package:ueh_mobile_app/configs/routes.dart';
 import 'package:ueh_mobile_app/data/exam_data.dart';
 import 'package:ueh_mobile_app/services/api_service.dart';
-import 'package:ueh_mobile_app/screens/student/pages/doingexam_screen.dart';
 import 'package:ueh_mobile_app/utils/exports.dart';
 import 'package:ueh_mobile_app/models/exam_model.dart';
 import 'package:ueh_mobile_app/widgets/examCard_widget.dart';
 
 class ExamListScreen extends StatefulWidget {
   @override
-  _ExamScreenState createState() => _ExamScreenState();
+  _ExamListScreenState createState() => _ExamListScreenState();
 }
 
-class _ExamScreenState extends State<ExamListScreen> {
+class _ExamListScreenState extends State<ExamListScreen> {
   final NetworkService networkService = NetworkService();
   List<ExamList>? _examData;
   bool _isLoading = true;
@@ -27,7 +25,7 @@ class _ExamScreenState extends State<ExamListScreen> {
 
   Future<void> _fetchData() async {
     try {
-      final apiService = ApiService("$dotenv.env['API_URL']/exams");
+      final apiService = ApiService("${dotenv.env['API_URL']}/exams");
       final List<ExamList> examData = await apiService.fetchDataList<List<ExamList>>((json) => ExamList.examListFromJson(json));
 
       setState(() {
@@ -40,43 +38,6 @@ class _ExamScreenState extends State<ExamListScreen> {
     }
   }
 
-
-  void _doExercise(bool isInternetConnected) async {
-    print("Doing exercise...");
-    bool isAirplaneModeEnabled = await networkService.isAirplaneModeEnabled();
-    print("Connection: ${await networkService.checkNetworkStatus()}");
-
-
-    print(isInternetConnected);
-    if (isInternetConnected || !isAirplaneModeEnabled) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-              'Bạn cần tắt Wi-Fi và bật chế độ máy bay để làm bài thi.'),
-          backgroundColor: Colors.red,
-        ),
-      );
-    } else {
-      print('thi');
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) =>
-              DoingExamScreen(
-                onFinish: _finishExercise,
-              ),
-        ),
-      );
-    }
-  }
-
-  void _finishExercise() async {
-    print("Finish exercise...");
-    Navigator.pushNamed(
-      context,
-      AppRoutes.waitingScreen,
-    );
-  }
 
 
   @override

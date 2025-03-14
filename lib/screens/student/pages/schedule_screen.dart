@@ -214,10 +214,10 @@ class _ScheduleState extends State<ScheduleScreen> {
                       final item = classSchedule[idx];
                       return buildSubjectCard(
                         context: context,
-                        subjectName:  item.courseName!,
-                        schoolTime: item.startTime!,
-                        room: item.duration.toString()!,
-                        classId: item.examId.toString()!,
+                        subjectName:  item.courseName,
+                        schoolTime: item.startTime,
+                        room: item.duration.toString(),
+                        classId: item.examId.toString(),
                         idx: idx,
                         colorPalette: myCustomPalette,
                         customIcons: myCustomIcons,

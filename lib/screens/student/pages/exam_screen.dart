@@ -1,12 +1,12 @@
 import 'package:ueh_mobile_app/configs/routes.dart';
-import 'package:ueh_mobile_app/data/exam_data.dart';
+// import 'package:ueh_mobile_app/data/exam_data.dart';
 import 'package:ueh_mobile_app/services/network_service.dart';
-import 'package:ueh_mobile_app/services/api_service.dart';
+// import 'package:ueh_mobile_app/services/api_service.dart';
 import 'package:ueh_mobile_app/screens/student/pages/doingexam_screen.dart';
 import 'package:ueh_mobile_app/utils/exports.dart';
 import 'package:ueh_mobile_app/providers/network_status_provider.dart';
-import 'package:ueh_mobile_app/models/exam_model.dart';
-import 'package:ueh_mobile_app/widgets/examCard_widget.dart';
+// import 'package:ueh_mobile_app/models/exam_model.dart';
+// import 'package:ueh_mobile_app/widgets/examCard_widget.dart';
 
 class ExamScreen extends StatefulWidget {
   @override
@@ -16,7 +16,7 @@ class ExamScreen extends StatefulWidget {
 class _ExamScreenState extends State<ExamScreen> {
   final NetworkService networkService = NetworkService();
   // late StudentModel student;
-  void _doExercise(bool isInternetConnected) async {
+  void _doExercise(bool isInternetConnected, String examId) async {
     print("Doing exercise...");
     bool isAirplaneModeEnabled = await networkService.isAirplaneModeEnabled();
     print("Connection: ${await networkService.checkNetworkStatus()}");
@@ -39,6 +39,7 @@ class _ExamScreenState extends State<ExamScreen> {
           builder: (context) =>
               DoingExamScreen(
                 onFinish: _finishExercise,
+                examId: examId
               ),
         ),
       );
@@ -58,6 +59,8 @@ class _ExamScreenState extends State<ExamScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final String examId = ModalRoute.of(context)?.settings.arguments as String;
+    print("examId: $examId");
     final isConnected =
         context.watch<NetworkStatusProvider>().isInternetConnected;
     return Scaffold(
@@ -67,11 +70,15 @@ class _ExamScreenState extends State<ExamScreen> {
           style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Color(0xA0DAE4F5)),
         ),
         centerTitle: true,
-        backgroundColor: Colors.indigo, // Màu nền của AppBar
+        backgroundColor: Colors.indigo, 
       ),
       body: Center(
         child: ElevatedButton(
-          onPressed: ()=>_doExercise(isConnected),
+          onPressed: ()=>_doExercise(
+            isConnected,
+            examId,
+            )
+            ,
           child: Text("Làm bài thi"),
         ),
       ),

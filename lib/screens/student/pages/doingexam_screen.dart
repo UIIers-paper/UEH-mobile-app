@@ -1,10 +1,13 @@
 import 'package:ueh_mobile_app/utils/exports.dart';
 import 'package:ueh_mobile_app/widgets/bottomAnswer_widget.dart';
 import 'package:ueh_mobile_app/widgets/localExam_widget.dart';
+import 'package:ueh_mobile_app/services/api_service.dart';
+import 'package:ueh_mobile_app/models/exam_model.dart';
 class DoingExamScreen extends StatefulWidget {
   final VoidCallback onFinish;
+  final String examId;
 
-  DoingExamScreen({required this.onFinish});
+  DoingExamScreen({required this.onFinish, required this.examId});
   @override
   _DoingExamScreenState createState() => _DoingExamScreenState();
 }
@@ -12,6 +15,8 @@ class DoingExamScreen extends StatefulWidget {
 class _DoingExamScreenState extends State<DoingExamScreen> with WidgetsBindingObserver {
   final NetworkService networkService = NetworkService();
   final UserService _userLog = UserService();
+  List<ExamList>? _examData;
+  bool _isLoading = true;
   bool isBottomSheetOpen = false;
   int currentQuestionIndex = 0;
   final List<String> questions = ["Câu hỏi 1", "Câu hỏi 2", "Câu hỏi 3"];
@@ -30,6 +35,24 @@ class _DoingExamScreenState extends State<DoingExamScreen> with WidgetsBindingOb
       }
     });
   }
+
+
+  Future<void> _fetchData() async {
+    try {
+      final apiService = ApiService("${dotenv.env['API_URL']}/exams");
+      final List<ExamList> examData = await apiService.fetchDataList<List<ExamList>>((json) => ExamList.examListFromJson(json));
+
+      setState(() {
+        _examData = examData;
+        _isLoading = false;
+      });
+    } catch (e) {
+      setState(() => _isLoading = false);
+      print('Error: $e');
+    }
+  }
+
+
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {

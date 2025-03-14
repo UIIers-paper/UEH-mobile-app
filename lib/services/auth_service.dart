@@ -149,7 +149,7 @@ class AuthService {
   Future<void> saveUserAuthentication(User? user, BuildContext context) async{
     final uid = user!.uid;
     await _storage.write(key: 'uid', value: uid);
-    final idTokenResult = await user!.getIdTokenResult(true);
+    final idTokenResult = await user.getIdTokenResult(true);
     final idToken = idTokenResult.token;
     await _storage.write(key: 'idToken', value: idToken);
     Navigator.pushReplacementNamed(context, AppRoutes.dashboardScreen);

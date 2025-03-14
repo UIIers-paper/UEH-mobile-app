@@ -52,6 +52,7 @@ class ExamCard extends StatelessWidget {
           Navigator.pushNamed(
             context,
             AppRoutes.examScreen,
+            arguments: classId,
           );
 
         },
