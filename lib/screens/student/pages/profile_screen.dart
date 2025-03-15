@@ -1,7 +1,7 @@
 import 'package:ueh_mobile_app/utils/exports.dart';
 import 'package:ueh_mobile_app/widgets/profile_widget.dart';
 import 'package:ueh_mobile_app/widgets/accountLinking_widget.dart';
-import 'package:ueh_mobile_app/data/student_data.dart';
+// import 'package:ueh_mobile_app/data/student_data.dart';
 import 'package:ueh_mobile_app/services/api_service.dart';
 import 'package:ueh_mobile_app/models/student_model.dart';
 
@@ -41,6 +41,13 @@ class _ProfileState extends State<ProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
+    if (_isLoading) {
+      return Scaffold(
+        body: Center(
+          child: CircularProgressIndicator(),
+        ),
+      );
+    }
     return Padding(
       padding: const EdgeInsets.all(16.0),
       child: Column(
@@ -54,12 +61,12 @@ class _ProfileState extends State<ProfileScreen> {
                   backgroundColor: Colors.grey[200],
                   child: CircleAvatar(
                     radius: 45,
-                    backgroundImage: AssetImage(student.imageUrl),
+                    backgroundImage: AssetImage(_studentData?.imageUrl ?? "null"),
                   ),
                 ),
                 SizedBox(height: 10),
                 Text(
-                  student.name,
+                  _studentData?.name ?? "null",
                   style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
                 ),
                 Text(

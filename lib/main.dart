@@ -4,8 +4,12 @@ import 'package:provider/provider.dart';
 import 'package:ueh_mobile_app/database/local_database.dart';
 import 'package:ueh_mobile_app/providers/network_status_provider.dart';
 import 'package:ueh_mobile_app/providers/airplane_status_provider.dart';
+import 'package:ueh_mobile_app/services/workmanager_service.dart';
+
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await WorkmanagerService.init();
   await Firebase.initializeApp();
   await dotenv.load(fileName: ".env");
   await LocalDatabase().database;

@@ -26,6 +26,8 @@ class _ExamListScreenState extends State<ExamListScreen> {
   Future<void> _fetchData() async {
     try {
       final apiService = ApiService("${dotenv.env['API_URL']}/exams");
+      print("tới bước này");
+      print("${dotenv.env['API_URL']}/exams");
       final List<ExamList> examData = await apiService.fetchDataList<List<ExamList>>((json) => ExamList.examListFromJson(json));
 
       setState(() {
@@ -51,6 +53,14 @@ class _ExamListScreenState extends State<ExamListScreen> {
         classesByDay[day] = [];
       }
       classesByDay[day]!.add(examItem);
+    }
+
+    if (_isLoading) {
+      return Scaffold(
+        body: Center(
+          child: CircularProgressIndicator(),
+        ),
+      );
     }
 
     return ListView(

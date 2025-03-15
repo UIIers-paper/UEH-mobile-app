@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:ueh_mobile_app/services/api_service.dart';
+import 'package:ueh_mobile_app/utils/exports.dart';
 import 'package:ueh_mobile_app/models/exam_model.dart';
 import 'package:ueh_mobile_app/widgets/cardSchedule_widget.dart';
-import 'package:ueh_mobile_app/data/exam_data.dart';
 class ScheduleScreen extends StatefulWidget {
   @override
   _ScheduleState createState() => _ScheduleState();
@@ -12,7 +13,7 @@ class _ScheduleState extends State<ScheduleScreen> {
   int selectedDayIndex = 1;
   bool isLoading = true;
   List<DateTime> weekDates = [];
-  List<ExamList> scheduleData = mockExams;
+  List<ExamList>? scheduleData;
   List<IconData> myCustomIcons = [
     Icons.book,
     Icons.science,
@@ -48,9 +49,11 @@ class _ScheduleState extends State<ScheduleScreen> {
     } catch (e) {
       print('Error fetching data: $e');
     } finally {
-      setState(() {
-        isLoading = false;
-      });
+      if (mounted) {
+        setState(() {
+          isLoading = false;
+        });
+      }
     }
   }
 
@@ -58,27 +61,35 @@ class _ScheduleState extends State<ScheduleScreen> {
   Future<void> _fetchSchedule() async {
     try {
       print('Fetching schedule...');
-      // var response = await djangoService.getRequest('/school/schedule');
-      setState(() {
-        DateTime monday = weekDates.first;
-        DateTime sunday = weekDates.last;
-        print('Monday: $monday');
-        print('Sunday: $sunday');
-        print('Schedule Data: $scheduleData');
-        scheduleData = scheduleData.where((item) {
-          DateTime sessionDate = DateTime.parse(item.date);
-          print('Session Date: $sessionDate');
-          return sessionDate.isAfter(monday.subtract(Duration(days: 1))) &&
-              sessionDate.isBefore(sunday.add(Duration(days: 1)));
-        }).toList();
-        print('Number of sessions after filtering: ${scheduleData.length}');
-        if (scheduleData.isEmpty) {
-          print('No sessions found for the current week.');
-        }
-        scheduleData.sort((a, b) => DateTime.parse(a.date).compareTo(DateTime.parse(b.date)));
-      });
-      print('Sorted Schedule Data: $scheduleData');
+      final apiService = ApiService("${dotenv.env['API_URL']}/examlist");
+      final List<ExamList> examData = await apiService.fetchDataList<
+          List<ExamList>>((json) => ExamList.examListFromJson(json));
+      if (mounted) {
+        setState(() {
+          scheduleData = examData;
+          isLoading = false;
+          DateTime monday = weekDates.first;
+          DateTime sunday = weekDates.last;
+          print('Monday: $monday');
+          print('Sunday: $sunday');
+          print('Schedule Data: $scheduleData');
+          scheduleData = (scheduleData ?? []).where((item) {
+            DateTime sessionDate = DateTime.parse(item.date);
+            print('Session Date: $sessionDate');
+            return sessionDate.isAfter(monday.subtract(Duration(days: 1))) &&
+                sessionDate.isBefore(sunday.add(Duration(days: 1)));
+          }).toList();
+          print('Number of sessions after filtering: ${(scheduleData ?? [])
+              .length}');
+          if ((scheduleData ?? []).isEmpty) {
+            print('No sessions found for the current week.');
+          }
+          (scheduleData ?? []).sort((a, b) =>
+              DateTime.parse(a.date).compareTo(DateTime.parse(b.date)));
+        });
+      }
     } catch (e) {
+      setState(() => isLoading = false);
       print('Error fetching schedule: $e');
     }
   }
@@ -108,24 +119,21 @@ class _ScheduleState extends State<ScheduleScreen> {
   }
 
   @override
+  void dispose() {
+    super.dispose();
+  }
+
+
+  @override
   Widget build(BuildContext context) {
     if (weekDates.isEmpty || isLoading) {
       return Center(child: CircularProgressIndicator());
     }
 
-    final dailySchedule = scheduleData.where((item) =>
+    final dailySchedule = (scheduleData ?? []).where((item) =>
     DateTime
         .parse(item.date)
         .weekday == selectedDayIndex).toList();
-
-    print('Daily schedule ${scheduleData.map((exam) => {
-  'examId': exam.examId,
-  'courseName': exam.courseName,
-  'subject': exam.subject,
-  'startTime': exam.startTime,
-  'date': exam.date,
-}).toList()}');
-
     Map<String, List<ExamList>> classes = {};
     for (var item in dailySchedule) {
       if (!classes.containsKey(item.examId)) {

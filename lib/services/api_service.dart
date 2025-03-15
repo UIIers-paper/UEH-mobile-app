@@ -9,9 +9,8 @@ class ApiService {
 
   Future<T> fetchData<T>(T Function(Map<String, dynamic>) fromJson) async {
     final response = await http.get(Uri.parse(apiUrl));
-
     if (response.statusCode == 200) {
-      final jsonData = json.decode(response.body)[0];
+      final jsonData = json.decode(response.body);
       return fromJson(jsonData);
     } else {
       throw Exception('Failed to load data from API');
@@ -19,9 +18,13 @@ class ApiService {
   }
   Future<T> fetchDataList<T>(T Function(List<dynamic>) fromJson) async {
     final response = await http.get(Uri.parse(apiUrl));
+    print("tới bước này");
+    print(response);
 
     if (response.statusCode == 200) {
-      final jsonData = json.decode(response.body)[0];
+      print("Đã get dữ liệu thành công");
+      final jsonData = json.decode(response.body);
+      print(jsonData);
       return fromJson(jsonData);
     } else {
       throw Exception('Failed to load data from API');

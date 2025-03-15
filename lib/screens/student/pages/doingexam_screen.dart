@@ -118,6 +118,13 @@ class _DoingExamScreenState extends State<DoingExamScreen> with WidgetsBindingOb
 
   @override
   Widget build(BuildContext context) {
+    if (_isLoading) {
+      return Scaffold(
+        body: Center(
+          child: CircularProgressIndicator(),
+        ),
+      );
+    }
     return Scaffold(
       appBar: AppBar(
         title: Text("Đề Thi"),

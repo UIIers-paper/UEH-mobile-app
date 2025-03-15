@@ -1,6 +1,4 @@
-// import 'package:ueh_mobile_app/models/student_model.dart';
-import 'package:ueh_mobile_app/data/student_data.dart';
-import 'package:ueh_mobile_app/models/exam_model.dart';
+// import 'package:ueh_mobile_app/data/student_data.dart';
 import 'package:ueh_mobile_app/utils/exports.dart';
 import 'package:ueh_mobile_app/services/api_service.dart';
 import 'package:ueh_mobile_app/screens/student/pages/exam_list_screen.dart';
@@ -8,7 +6,6 @@ import 'package:ueh_mobile_app/screens/student/pages/home_screen.dart';
 import 'package:ueh_mobile_app/screens/student/pages/profile_screen.dart';
 import 'package:ueh_mobile_app/screens/student/pages/schedule_screen.dart';
 import 'package:ueh_mobile_app/providers/network_status_provider.dart';
-// import 'package:ueh_mobile_app/data/student_data.dart';
 import 'package:ueh_mobile_app/models/student_model.dart  ';
 
 class Dashboard extends StatefulWidget {
@@ -23,7 +20,6 @@ class _DashboardScreenState extends State<Dashboard> {
   StreamSubscription<ConnectivityResult>? _subscription;
   bool isInternetConnected = true;
   bool _isLoading = true;
-  // late StudentModel student;
   StudentModel? _student;
 
   int _currentIndex = 0;
@@ -52,11 +48,9 @@ class _DashboardScreenState extends State<Dashboard> {
   Future<void> _fetchData() async {
     try {
       final apiService = ApiService("${dotenv.env['API_URL']}/students/3122102001");
-      final StudentModel examData = await apiService.fetchData(((json) => StudentModel.fromJson(json)));
-
-
+      final StudentModel studentData = await apiService.fetchData(((json) => StudentModel.fromJson(json)));
       setState(() {
-        _student = examData;
+        _student = studentData;
         _isLoading = false;
       });
     } catch (e) {
@@ -87,6 +81,14 @@ class _DashboardScreenState extends State<Dashboard> {
 
   @override
   Widget build(BuildContext context) {
+    if (_isLoading) {
+      return Scaffold(
+        body: Center(
+          child: CircularProgressIndicator(),
+        ),
+      );
+    }
+
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.indigo,
@@ -103,7 +105,7 @@ class _DashboardScreenState extends State<Dashboard> {
               },
               child: CircleAvatar(
                 radius: 20,
-                backgroundImage: AssetImage(_student?.imageUrl ?? student.imageUrl),
+                backgroundImage: AssetImage(_student?.imageUrl ?? "student.imageUrl"),
               ),
             ),
             SizedBox(width: 12),
@@ -116,7 +118,7 @@ class _DashboardScreenState extends State<Dashboard> {
                   Row(
                     children: [
                       Text(
-                        _student?.name ?? student.name,
+                        _student?.name ?? "",
                         style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Color(0xA0DAE4F5)),
                       ),
                       SizedBox(width: 8),
@@ -128,7 +130,7 @@ class _DashboardScreenState extends State<Dashboard> {
                     ],
                   ),
                   Text(
-                    _student?.studentId ?? student.studentId,
+                    _student?.studentId ?? "",
                     style: TextStyle(fontSize: 14, color: Colors.grey),
                   ),
                 ],
@@ -150,10 +152,10 @@ class _DashboardScreenState extends State<Dashboard> {
               decoration: BoxDecoration(
                 color: Colors.indigo,
               ),
-              accountName: Text(_student?.name ?? student.name),
-              accountEmail: Text(_student?.studentId ?? student.studentId),
+              accountName: Text(_student?.name ?? ""),
+              accountEmail: Text(_student?.studentId ?? ""),
               currentAccountPicture: CircleAvatar(
-                backgroundImage: AssetImage(_student?.imageUrl ?? student.imageUrl),
+                backgroundImage: AssetImage(_student?.imageUrl ?? ""),
               ),
             ),
             ListTile(
