@@ -13,7 +13,7 @@ class _ScheduleState extends State<ScheduleScreen> {
   int selectedDayIndex = 1;
   bool isLoading = true;
   List<DateTime> weekDates = [];
-  List<ExamList>? scheduleData;
+  List<ExamModel>? scheduleData;
   List<IconData> myCustomIcons = [
     Icons.book,
     Icons.science,
@@ -62,8 +62,8 @@ class _ScheduleState extends State<ScheduleScreen> {
     try {
       print('Fetching schedule...');
       final apiService = ApiService("${dotenv.env['API_URL']}/examlist");
-      final List<ExamList> examData = await apiService.fetchDataList<
-          List<ExamList>>((json) => ExamList.examListFromJson(json));
+      final List<ExamModel> examData = await apiService.fetchDataList<
+          List<ExamModel>>((json) => ExamModel.examModelFromJson(json));
       if (mounted) {
         setState(() {
           scheduleData = examData;
@@ -134,7 +134,7 @@ class _ScheduleState extends State<ScheduleScreen> {
     DateTime
         .parse(item.date)
         .weekday == selectedDayIndex).toList();
-    Map<String, List<ExamList>> classes = {};
+    Map<String, List<ExamModel>> classes = {};
     for (var item in dailySchedule) {
       if (!classes.containsKey(item.examId)) {
         classes[item.examId] = [];

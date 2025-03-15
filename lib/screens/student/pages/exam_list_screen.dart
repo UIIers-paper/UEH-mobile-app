@@ -11,7 +11,7 @@ class ExamListScreen extends StatefulWidget {
 
 class _ExamListScreenState extends State<ExamListScreen> {
   final NetworkService networkService = NetworkService();
-  List<ExamList>? _examData;
+  List<ExamModel>? _examData;
   bool _isLoading = true;
   // late StudentModel student;
 
@@ -28,7 +28,7 @@ class _ExamListScreenState extends State<ExamListScreen> {
       final apiService = ApiService("${dotenv.env['API_URL']}/exams");
       print("tới bước này");
       print("${dotenv.env['API_URL']}/exams");
-      final List<ExamList> examData = await apiService.fetchDataList<List<ExamList>>((json) => ExamList.examListFromJson(json));
+      final List<ExamModel> examData = await apiService.fetchDataList<List<ExamModel>>((json) => ExamModel.examModelFromJson(json));
 
       setState(() {
         _examData = examData;
@@ -44,8 +44,8 @@ class _ExamListScreenState extends State<ExamListScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final List<ExamList> examList = _examData ?? mockExams;
-    Map<String, List<ExamList>> classesByDay = {};
+    final List<ExamModel> examList = _examData ?? mockExams;
+    Map<String, List<ExamModel>> classesByDay = {};
     examList.sort((a, b) => a.date.compareTo(b.date));
     for (var examItem in examList) {
       final day = _getDayOfWeek(examItem.date);
@@ -87,7 +87,7 @@ String _getDayOfWeek(String dayTime) {
 
 
 
-Widget _buildDaySection(String day, List<ExamList> exams) {
+Widget _buildDaySection(String day, List<ExamModel> exams) {
   return Column(
     crossAxisAlignment: CrossAxisAlignment.start,
     children: [

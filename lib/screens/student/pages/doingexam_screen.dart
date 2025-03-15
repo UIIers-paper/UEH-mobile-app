@@ -15,7 +15,7 @@ class DoingExamScreen extends StatefulWidget {
 class _DoingExamScreenState extends State<DoingExamScreen> with WidgetsBindingObserver {
   final NetworkService networkService = NetworkService();
   final UserService _userLog = UserService();
-  List<ExamList>? _examData;
+  List<ExamModel>? _examData;
   bool _isLoading = true;
   bool isBottomSheetOpen = false;
   int currentQuestionIndex = 0;
@@ -39,8 +39,8 @@ class _DoingExamScreenState extends State<DoingExamScreen> with WidgetsBindingOb
 
   Future<void> _fetchData() async {
     try {
-      final apiService = ApiService("${dotenv.env['API_URL']}/exams");
-      final List<ExamList> examData = await apiService.fetchDataList<List<ExamList>>((json) => ExamList.examListFromJson(json));
+      final apiService = ApiService("${dotenv.env['API_URL']}/exams/${widget.examId}");
+      final List<ExamModel> examData = await apiService.fetchDataList<List<ExamModel>>((json) => ExamModel.examModelFromJson(json));
 
       setState(() {
         _examData = examData;
