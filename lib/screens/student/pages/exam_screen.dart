@@ -1,12 +1,8 @@
 import 'package:ueh_mobile_app/configs/routes.dart';
-// import 'package:ueh_mobile_app/data/exam_data.dart';
 import 'package:ueh_mobile_app/services/network_service.dart';
-// import 'package:ueh_mobile_app/services/api_service.dart';
 import 'package:ueh_mobile_app/screens/student/pages/doingexam_screen.dart';
 import 'package:ueh_mobile_app/utils/exports.dart';
 import 'package:ueh_mobile_app/providers/network_status_provider.dart';
-// import 'package:ueh_mobile_app/models/exam_model.dart';
-// import 'package:ueh_mobile_app/widgets/examCard_widget.dart';
 
 class ExamScreen extends StatefulWidget {
   @override

@@ -3,6 +3,8 @@ import 'package:ueh_mobile_app/widgets/bottomAnswer_widget.dart';
 import 'package:ueh_mobile_app/widgets/localExam_widget.dart';
 import 'package:ueh_mobile_app/services/api_service.dart';
 import 'package:ueh_mobile_app/models/exam_model.dart';
+import 'package:ueh_mobile_app/database/local_database.dart';
+
 class DoingExamScreen extends StatefulWidget {
   final VoidCallback onFinish;
   final String examId;
@@ -16,11 +18,11 @@ class _DoingExamScreenState extends State<DoingExamScreen> with WidgetsBindingOb
   final NetworkService networkService = NetworkService();
   final UserService _userLog = UserService();
   List<ExamModel>? _examData;
+  Map<int, String> savedAnswers = {};
   bool _isLoading = true;
   bool isBottomSheetOpen = false;
   int currentQuestionIndex = 0;
   final List<String> questions = ["Câu hỏi 1", "Câu hỏi 2", "Câu hỏi 3"];
-  String selectedAnswer = "";
   bool isSubmitted = false;
 
   @override
@@ -33,6 +35,14 @@ class _DoingExamScreenState extends State<DoingExamScreen> with WidgetsBindingOb
         _lockExam("network");
         // _userLog.recordViolation("network");
       }
+    });
+    _loadSavedAnswers();
+  }
+
+  Future<void> _loadSavedAnswers() async {
+    Map<int, String> answers = await LocalDatabase().loadAnswers(widget.examId);
+    setState(() {
+      savedAnswers = answers;
     });
   }
 
@@ -87,11 +97,12 @@ class _DoingExamScreenState extends State<DoingExamScreen> with WidgetsBindingOb
         builder: (context) => BottomAnswerWidget(
           numberOfQuestions: 40,
           currentQuestionIndex: currentQuestionIndex,
-          selectedAnswer: selectedAnswer,
-          onAnswerChanged: (value) {
+          savedAnswers: savedAnswers,
+          onAnswerChanged: (questionIndex, answer) async {
             setState(() {
-              selectedAnswer = value ?? "";
+              savedAnswers[questionIndex] = answer;
             });
+            await LocalDatabase().saveAnswer(widget.examId, questionIndex, answer);
           },
           onClose: () {
             setState(() {
@@ -112,7 +123,6 @@ class _DoingExamScreenState extends State<DoingExamScreen> with WidgetsBindingOb
       isSubmitted = true;
     });
     widget.onFinish();
-    // Navigator.pushNamedAndRemoveUntil(context, '/dashboard', (route) => false);
   }
 
 

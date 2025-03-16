@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 
 class BottomAnswerWidget extends StatefulWidget {
   final int currentQuestionIndex;
-  final String selectedAnswer;
-  final Function(String?) onAnswerChanged;
+  final Map<int, String> savedAnswers;
+  final Function(int, String) onAnswerChanged;
   final VoidCallback onClose;
   final int numberOfQuestions;
   final VoidCallback onFinish;
@@ -11,7 +11,7 @@ class BottomAnswerWidget extends StatefulWidget {
   const BottomAnswerWidget({
     Key? key,
     required this.currentQuestionIndex,
-    required this.selectedAnswer,
+    required this.savedAnswers,
     required this.onAnswerChanged,
     required this.onClose,
     required this.numberOfQuestions,
@@ -38,9 +38,10 @@ class _BottomAnswerWidgetState extends State<BottomAnswerWidget> {
   @override
   Widget build(BuildContext context) {
     List<int> currentPageQuestions = getCurrentPageQuestions();
+    List<String> answerOptions = ['A', 'B', 'C', 'D'];
 
     return FractionallySizedBox(
-      heightFactor: 0.4,
+      heightFactor: 0.5,
       child: Container(
         decoration: BoxDecoration(
           color: Colors.grey[300],
@@ -56,32 +57,37 @@ class _BottomAnswerWidgetState extends State<BottomAnswerWidget> {
                 onPressed: widget.onClose,
               ),
             ),
-
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: currentPageQuestions.map((questionNumber) {
-                return Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      "Câu $questionNumber",
-                      style: const TextStyle(
-                          fontSize: 16, fontWeight: FontWeight.bold),
-                    ),
-                    for (String option in ['A', 'B', 'C', 'D'])
-                      Row(
-                        children: [
-                          Text(option, style: const TextStyle(fontSize: 14)),
-                          Radio<String>(
-                            value: option,
-                            groupValue: widget.selectedAnswer,
-                            onChanged: widget.onAnswerChanged,
-                          ),
-                        ],
+            Expanded(
+              child: ListView(
+                children: currentPageQuestions.map((questionNumber) {
+                  return Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        "Câu $questionNumber:",
+                        style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                       ),
-                  ],
-                );
-              }).toList(),
+                      Wrap(
+                        spacing: 10,
+                        children: answerOptions.map((option) {
+                          bool isSelected = widget.savedAnswers[questionNumber] == option;
+                          return ChoiceChip(
+                            label: Text(option),
+                            selected: isSelected,
+                            onSelected: (selected) {
+                              setState(() {
+                                widget.onAnswerChanged(questionNumber, option);
+                              });
+                            },
+                            selectedColor: Colors.orange,
+                          );
+                        }).toList(),
+                      ),
+                      SizedBox(height: 10),
+                    ],
+                  );
+                }).toList(),
+              ),
             ),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,

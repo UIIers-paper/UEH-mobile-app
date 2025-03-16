@@ -113,6 +113,7 @@ Widget _buildDaySection(String day, List<ExamModel> exams) {
           classCodeName: examItem.teacherName,
           className: examItem.courseName,
           dayTime: examItem.date,
+          isDownloaded: examItem.isSaved,
         ),
     ],
   );

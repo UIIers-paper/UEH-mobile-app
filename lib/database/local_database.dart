@@ -1,5 +1,8 @@
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
+import 'dart:convert';
+import 'dart:typed_data';
+
 
 class LocalDatabase {
   static final LocalDatabase _instance = LocalDatabase._internal();
@@ -32,10 +35,19 @@ class LocalDatabase {
             synced INTEGER DEFAULT 0
           )
         ''');
+
         await db.execute('''
-          CREATE TABLE exam_keys (
-            file_name TEXT PRIMARY KEY,
-            encryption_key TEXT
+          CREATE TABLE exam_storage (
+            exam_id TEXT PRIMARY KEY,
+            file_data BLOB
+          )
+        ''');
+      
+
+        await db.execute('''
+          CREATE TABLE exam_answers (
+            exam_id TEXT PRIMARY KEY,
+            answers TEXT
           )
         ''');
       },
@@ -62,26 +74,80 @@ class LocalDatabase {
     await db.update('logs', {'synced': 1}, where: 'id IN (${logIds.join(",")})');
   }
 
-  Future<void> saveEncryptionKey(String fileName, String key) async {
+
+  Future<void> saveEncryptedFile(String examId, Uint8List fileData) async {
     final db = await database;
     await db.insert(
-      'exam_keys',
-      {'file_name': fileName, 'encryption_key': key},
+      'exam_storage',
+      {
+        'exam_id': examId,
+        'file_data': fileData,
+      },
       conflictAlgorithm: ConflictAlgorithm.replace,
     );
   }
 
-  Future<String?> getEncryptionKey(String fileName) async {
+  Future<Uint8List?> getEncryptedFile(String examId) async {
     final db = await database;
     final result = await db.query(
-      'exam_keys',
-      where: 'file_name = ?',
-      whereArgs: [fileName],
+      'exam_storage',
+      columns: ['file_data'],
+      where: 'exam_id = ?',
+      whereArgs: [examId],
     );
     if (result.isNotEmpty) {
-      return result.first['encryption_key'] as String;
+      return result.first['file_data'] as Uint8List;
     }
     return null;
+  }
+
+
+
+  Future<void> saveAnswer(String examId, int questionIndex, String answer) async {
+    final db = await database;
+    final result = await db.query(
+      'exam_answers',
+      columns: ['answers'],
+      where: 'exam_id = ?',
+      whereArgs: [examId],
+    );
+
+    Map<int, String> answers = {};
+
+    if (result.isNotEmpty) {
+      final String storedAnswers = result.first['answers'] as String;
+      answers = _parseAnswers(storedAnswers);
+    }
+    answers[questionIndex] = answer;
+
+    await db.insert(
+      'exam_answers',
+      {
+        'exam_id': examId,
+        'answers': jsonEncode(answers),
+      },
+      conflictAlgorithm: ConflictAlgorithm.replace,
+    );
+  }
+
+  Future<Map<int, String>> loadAnswers(String examId) async {
+    final db = await database;
+    final result = await db.query(
+      'exam_answers',
+      where: 'exam_id = ?',
+      whereArgs: [examId],
+    );
+    if (result.isNotEmpty) {
+      String answersString = result.first['answers'] as String;
+      return _parseAnswers(answersString);
+    }
+    return {};
+  }
+
+  Map<int, String> _parseAnswers(String jsonString) {
+    if (jsonString.isEmpty) return {};
+    Map<String, dynamic> decoded = jsonDecode(jsonString);
+    return decoded.map<int, String>((key, value) => MapEntry(int.parse(key), value));
   }
 
 }

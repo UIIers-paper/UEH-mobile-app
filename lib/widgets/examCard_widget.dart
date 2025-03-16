@@ -1,14 +1,13 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:ueh_mobile_app/configs/routes.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 class ExamCard extends StatelessWidget {
   final String classId;
   final String classCodeName;
   final String className;
   final String dayTime;
-  final FlutterSecureStorage _storage = FlutterSecureStorage();
+  final bool isDownloaded;
 
   ExamCard({
     Key? key,
@@ -16,15 +15,9 @@ class ExamCard extends StatelessWidget {
     required this.classCodeName,
     required this.className,
     required this.dayTime,
+    this.isDownloaded = false,
   }) : super(key: key);
 
-  Future<int?> _getRole() async {
-    final storedRole = await _storage.read(key: 'role');
-    if (storedRole != null) {
-      return int.tryParse(storedRole);
-    }
-    return null;
-  }
 
   IconData _getRandomIcon() {
     final List<IconData> iconList = [
@@ -48,13 +41,12 @@ class ExamCard extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
       child: GestureDetector(
-        onTap: () async {
+        onTap: () {
           Navigator.pushNamed(
             context,
-            AppRoutes.examScreen,
+            isDownloaded ? AppRoutes.examScreen : AppRoutes.examLoadScreen,
             arguments: classId,
           );
-
         },
         child: Container(
           decoration: BoxDecoration(
@@ -75,14 +67,15 @@ class ExamCard extends StatelessWidget {
           child: Stack(
             children: [
               Positioned(
-                top: -10,
-                right: -10,
+                top: 10,
+                right: 10,
                 child: Icon(
-                  Icons.circle,
-                  size: 100,
-                  color: Colors.white.withOpacity(0.1),
+                  isDownloaded ? Icons.cloud_done : Icons.cloud_download,
+                  color: isDownloaded ? Colors.green : Colors.grey,
+                  size: 24,
                 ),
               ),
+
               Padding(
                 padding: const EdgeInsets.all(16.0),
                 child: Column(
@@ -129,59 +122,6 @@ class ExamCard extends StatelessWidget {
                         _buildPillText(classCodeName),
                         _buildPillRow(Icons.calendar_today, dayTime),
                       ],
-                    ),
-                    SizedBox(height: 16),
-                    FutureBuilder<int?>(
-                      future: _getRole(),
-                      builder: (context, snapshot) {
-                        if (snapshot.connectionState == ConnectionState.waiting) {
-                          return CircularProgressIndicator();
-                        } else if (snapshot.hasData && snapshot.data == 1) {
-                          return Align(
-                            alignment: Alignment.centerRight,
-                            child: OutlinedButton(
-                              onPressed: () {
-                                // Navigator.push(
-                                //   context,
-                                //   MaterialPageRoute(
-                                //     builder: (context) => ClassDetailScreen(
-                                //       class_id: classId,
-                                //       subject: className,
-                                //       time: dayTime,
-                                //       location: classCodeName,
-                                //     ),
-                                //   ),
-                                // );
-                              },
-                              style: OutlinedButton.styleFrom(
-                                side: BorderSide(color: Colors.lightBlueAccent, width: 2),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(20),
-                                ),
-                                padding: EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-                                backgroundColor: Colors.white70.withOpacity(0.1),
-                                elevation: 4,
-                              ),
-                              child: Row(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  Icon(Icons.visibility, color: Colors.white54, size: 18),
-                                  SizedBox(width: 8),
-                                  Text(
-                                    'View Class',
-                                    style: TextStyle(
-                                      color: Colors.white70,
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 16,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          );
-                        }
-                        return SizedBox.shrink();
-                      },
                     ),
                   ],
                 ),
