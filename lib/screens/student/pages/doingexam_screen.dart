@@ -1,8 +1,6 @@
 import 'package:ueh_mobile_app/utils/exports.dart';
 import 'package:ueh_mobile_app/widgets/bottomAnswer_widget.dart';
 import 'package:ueh_mobile_app/widgets/localExam_widget.dart';
-import 'package:ueh_mobile_app/services/api_service.dart';
-import 'package:ueh_mobile_app/models/exam_model.dart';
 import 'package:ueh_mobile_app/database/local_database.dart';
 
 class DoingExamScreen extends StatefulWidget {
@@ -17,7 +15,7 @@ class DoingExamScreen extends StatefulWidget {
 class _DoingExamScreenState extends State<DoingExamScreen> with WidgetsBindingObserver {
   final NetworkService networkService = NetworkService();
   final UserService _userLog = UserService();
-  List<ExamModel>? _examData;
+  Uint8List? _htmlContent;
   Map<int, String> savedAnswers = {};
   bool _isLoading = true;
   bool isBottomSheetOpen = false;
@@ -37,6 +35,7 @@ class _DoingExamScreenState extends State<DoingExamScreen> with WidgetsBindingOb
       }
     });
     _loadSavedAnswers();
+    _loadHtmlContent();
   }
 
   Future<void> _loadSavedAnswers() async {
@@ -47,18 +46,22 @@ class _DoingExamScreenState extends State<DoingExamScreen> with WidgetsBindingOb
   }
 
 
-  Future<void> _fetchData() async {
+  Future<void> _loadHtmlContent() async {
     try {
-      final apiService = ApiService("${dotenv.env['API_URL']}/exams/${widget.examId}");
-      final List<ExamModel> examData = await apiService.fetchDataList<List<ExamModel>>((json) => ExamModel.examModelFromJson(json));
-
-      setState(() {
-        _examData = examData;
-        _isLoading = false;
-      });
+      Uint8List? htmlContent = await LocalDatabase().getEncryptedFile(widget.examId);
+      if (htmlContent != null) {
+        setState(() {
+          _htmlContent = htmlContent; 
+          _isLoading = false; 
+        });
+      } else {
+        throw Exception("Không tìm thấy file HTML trong cơ sở dữ liệu");
+      }
     } catch (e) {
-      setState(() => _isLoading = false);
-      print('Error: $e');
+      print("Error loading HTML content: $e");
+      setState(() {
+        _isLoading = false; 
+      });
     }
   }
 
@@ -141,7 +144,7 @@ class _DoingExamScreenState extends State<DoingExamScreen> with WidgetsBindingOb
       ),
       body: Stack(
         children: [
-          LocalHtmlViewer(),
+          LocalHtmlViewer(htmlContent: _htmlContent!),
           Positioned(
             bottom: 16,
             right: 16,

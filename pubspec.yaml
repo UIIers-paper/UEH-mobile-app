@@ -58,6 +58,7 @@ dependencies:
   internet_connection_checker: ^3.0.1
   firebase_messaging: ^15.1.6
   workmanager: ^0.5.2
+  synchronized: ^3.3.0
 
 
 

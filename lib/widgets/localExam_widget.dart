@@ -2,6 +2,8 @@ import 'package:ueh_mobile_app/utils/exports.dart';
 
 
 class LocalHtmlViewer extends StatefulWidget {
+  final Uint8List htmlContent;
+  const LocalHtmlViewer({Key? key, required this.htmlContent}) : super(key: key);
   @override
   _LocalHtmlViewerState createState() => _LocalHtmlViewerState();
 }
@@ -30,21 +32,30 @@ class _LocalHtmlViewerState extends State<LocalHtmlViewer> {
           },
         ),
       );
-    _loadHtmlFromAssets();
+    _loadHtmlFromDatabase();
   }
 
-  Future<void> _loadHtmlFromAssets() async {
+  // Future<void> _loadHtmlFromAssets() async {
+  //   try {
+  //     final directory = await getTemporaryDirectory();
+  //     final filePath = '${directory.path}/exam_img_binary.html';
+  //     final fileData = await DefaultAssetBundle.of(context).loadString('assets/html/exam_img_binary.html');
+  //     final file = File(filePath);
+  //     await file.writeAsString(fileData);
+  //     setState(() {
+  //       localFilePath = filePath;
+  //     });
+  //   } catch (e) {
+  //     print("Error loading HTML file: $e");
+  //   }
+  // }
+
+  Future<void> _loadHtmlFromDatabase() async {
     try {
-      final directory = await getTemporaryDirectory();
-      final filePath = '${directory.path}/exam_img_binary.html';
-      final fileData = await DefaultAssetBundle.of(context).loadString('assets/html/exam_img_binary.html');
-      final file = File(filePath);
-      await file.writeAsString(fileData);
-      setState(() {
-        localFilePath = filePath;
-      });
+      final String htmlString = String.fromCharCodes(widget.htmlContent);
+      await controller.loadHtmlString(htmlString);
     } catch (e) {
-      print("Error loading HTML file: $e");
+      print("Error loading HTML content from database: $e");
     }
   }
 
@@ -54,7 +65,7 @@ class _LocalHtmlViewerState extends State<LocalHtmlViewer> {
       body: localFilePath.isEmpty
           ? Center(child: CircularProgressIndicator())
           : WebViewWidget(
-              controller: controller..loadFile(localFilePath),
+              controller: controller,
             ),
     );
   }

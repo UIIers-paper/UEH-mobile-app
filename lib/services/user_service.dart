@@ -12,16 +12,7 @@ class UserService {
     return user?.uid;
   }
 
-  Future<String?> getDeviceId() async {
-    try {
-      final String? deviceId = await MobileDeviceIdentifier().getDeviceId();
-      print("Device ID: $deviceId");
-      return deviceId;
-    } catch (e) {
-      print("Error fetching Device ID: $e");
-    }
 
-  }
   Future <Map<String, dynamic>> getDeviceInformation() async {
     var deviceInfo = DeviceInfoPlugin();
     late var data;
@@ -40,7 +31,7 @@ class UserService {
   Future<void> logUserInfo() async {
     try {
       String? userId = await getUserId();
-      String? deviceId = await getDeviceId();
+      String? deviceId = await MobileDeviceIdentifier().getDeviceId();
       DateTime loginTime = DateTime.now();
 
       if (userId != null) {

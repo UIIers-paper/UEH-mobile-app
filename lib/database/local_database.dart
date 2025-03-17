@@ -2,10 +2,12 @@ import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
 import 'dart:convert';
 import 'dart:typed_data';
+import 'package:synchronized/synchronized.dart';
 
 
 class LocalDatabase {
   static final LocalDatabase _instance = LocalDatabase._internal();
+  final _lock = Lock();
   static Database? _database;
 
   LocalDatabase._internal();
@@ -16,12 +18,16 @@ class LocalDatabase {
 
   Future<Database> get database async {
     if (_database != null) return _database!;
-    _database = await _initDatabase();
+    await _lock.synchronized(() async {
+      if (_database == null) {
+        _database = await _initDatabase();
+      }
+    });
     return _database!;
   }
 
   Future<Database> _initDatabase() async {
-    String path = join(await getDatabasesPath(), 'logs.db');
+    String path = join(await getDatabasesPath(), 'ueh.db');
     return openDatabase(
       path,
       version: 1,
@@ -37,16 +43,9 @@ class LocalDatabase {
         ''');
 
         await db.execute('''
-          CREATE TABLE exam_storage (
+          CREATE TABLE exam_table (
             exam_id TEXT PRIMARY KEY,
-            file_data BLOB
-          )
-        ''');
-      
-
-        await db.execute('''
-          CREATE TABLE exam_answers (
-            exam_id TEXT PRIMARY KEY,
+            file_data BLOB,
             answers TEXT
           )
         ''');
@@ -78,7 +77,7 @@ class LocalDatabase {
   Future<void> saveEncryptedFile(String examId, Uint8List fileData) async {
     final db = await database;
     await db.insert(
-      'exam_storage',
+      'exam_table',
       {
         'exam_id': examId,
         'file_data': fileData,
@@ -90,13 +89,16 @@ class LocalDatabase {
   Future<Uint8List?> getEncryptedFile(String examId) async {
     final db = await database;
     final result = await db.query(
-      'exam_storage',
+      'exam_table',
       columns: ['file_data'],
       where: 'exam_id = ?',
       whereArgs: [examId],
     );
     if (result.isNotEmpty) {
-      return result.first['file_data'] as Uint8List;
+      final data = result.first['file_data'];
+      if (data is Uint8List) {
+        return data;
+      }
     }
     return null;
   }
@@ -106,7 +108,7 @@ class LocalDatabase {
   Future<void> saveAnswer(String examId, int questionIndex, String answer) async {
     final db = await database;
     final result = await db.query(
-      'exam_answers',
+      'exam_table',
       columns: ['answers'],
       where: 'exam_id = ?',
       whereArgs: [examId],
@@ -121,7 +123,7 @@ class LocalDatabase {
     answers[questionIndex] = answer;
 
     await db.insert(
-      'exam_answers',
+      'exam_table',
       {
         'exam_id': examId,
         'answers': jsonEncode(answers),
@@ -133,7 +135,7 @@ class LocalDatabase {
   Future<Map<int, String>> loadAnswers(String examId) async {
     final db = await database;
     final result = await db.query(
-      'exam_answers',
+      'exam_table',
       where: 'exam_id = ?',
       whereArgs: [examId],
     );
@@ -146,16 +148,21 @@ class LocalDatabase {
 
   Map<int, String> _parseAnswers(String jsonString) {
     if (jsonString.isEmpty) return {};
-    Map<String, dynamic> decoded = jsonDecode(jsonString);
-    return decoded.map<int, String>((key, value) => MapEntry(int.parse(key), value));
+    try {
+      Map<String, dynamic> decoded = jsonDecode(jsonString);
+      return decoded.map<int, String>((key, value) => MapEntry(int.parse(key), value.toString()));
+    } catch (e) {
+      print("Error parsing answers: $e");
+      return {};
+    }
   }
 
 
   Future<bool> checkIsSaved(String examId) async {
     final db = await database;
     final result = await db.query(
-      'exams',
-      columns: ['file'],
+      'exam_table',
+      columns: ['file_data'],
       where: 'examId = ?',
       whereArgs: [examId],
     );

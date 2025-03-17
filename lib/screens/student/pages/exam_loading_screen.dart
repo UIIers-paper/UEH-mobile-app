@@ -4,7 +4,6 @@ import 'package:ueh_mobile_app/models/exam_model.dart';
 import 'package:ueh_mobile_app/services/api_service.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:ueh_mobile_app/database/local_database.dart';
-import 'package:ueh_mobile_app/utils/encryption_utils.dart';
 import 'package:ueh_mobile_app/services/examstorage_service.dart';
 class ExamLoadingScreen extends StatefulWidget {
   const ExamLoadingScreen({Key? key}) : super(key: key);
@@ -20,7 +19,6 @@ class _ExamLoadingScreenState extends State<ExamLoadingScreen> with SingleTicker
   late Animation<double> _animation;
   late String examId;
   bool _isLoading = true;
-  List<ExamModel>? _examData;
 
   @override
   void initState() {
@@ -44,12 +42,6 @@ class _ExamLoadingScreenState extends State<ExamLoadingScreen> with SingleTicker
       final filedata= await _examStorage.saveEncryptedExam(examId, examData[0].content!);
       final fileBytes = await filedata.readAsBytes();
       await _db.saveEncryptedFile(examId, fileBytes);
-
-      setState(() {
-        _examData = examData;
-        _isLoading = false;
-      });
-
       Future.delayed(const Duration(seconds: 1), () {
         if (mounted) {
           Navigator.pushReplacementNamed(context, AppRoutes.examScreen);
