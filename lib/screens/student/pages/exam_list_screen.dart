@@ -3,6 +3,7 @@ import 'package:ueh_mobile_app/services/api_service.dart';
 import 'package:ueh_mobile_app/utils/exports.dart';
 import 'package:ueh_mobile_app/models/exam_model.dart';
 import 'package:ueh_mobile_app/widgets/examCard_widget.dart';
+import 'package:ueh_mobile_app/repositories/exam_repository.dart';
 
 class ExamListScreen extends StatefulWidget {
   @override
@@ -29,9 +30,11 @@ class _ExamListScreenState extends State<ExamListScreen> {
       print("tới bước này");
       print("${dotenv.env['API_URL']}/exams");
       final List<ExamModel> examData = await apiService.fetchDataList<List<ExamModel>>((json) => ExamModel.examModelFromJson(json));
+      final examRepository = ExamRepository();
+      final List<ExamModel> exam_Data = await examRepository.fetchExamsWithFileStatus(examData);
 
       setState(() {
-        _examData = examData;
+        _examData = exam_Data;
         _isLoading = false;
       });
     } catch (e) {

@@ -150,4 +150,22 @@ class LocalDatabase {
     return decoded.map<int, String>((key, value) => MapEntry(int.parse(key), value));
   }
 
+
+  Future<bool> checkIsSaved(String examId) async {
+    final db = await database;
+    final result = await db.query(
+      'exams',
+      columns: ['file'],
+      where: 'examId = ?',
+      whereArgs: [examId],
+    );
+
+    if (result.isNotEmpty) {
+      final file = result.first['file'];
+      return file != null;
+    }
+
+    return false;
+  }
+
 }
