@@ -11,6 +11,8 @@ class ApiService {
     final response = await http.get(Uri.parse(apiUrl));
     if (response.statusCode == 200) {
       final jsonData = json.decode(response.body);
+      print('Get data');
+      print(jsonData);
       return fromJson(jsonData);
     } else {
       throw Exception('Failed to load data from API');
@@ -18,12 +20,9 @@ class ApiService {
   }
   Future<T> fetchDataList<T>(T Function(List<dynamic>) fromJson) async {
     final response = await http.get(Uri.parse(apiUrl));
-    print("tới bước này");
-    print(response);
-
     if (response.statusCode == 200) {
-      print("Đã get dữ liệu thành công");
       final jsonData = json.decode(response.body);
+      print('Get datalist');
       print(jsonData);
       return fromJson(jsonData);
     } else {

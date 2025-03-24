@@ -60,30 +60,24 @@ class _ScheduleState extends State<ScheduleScreen> {
 
   Future<void> _fetchSchedule() async {
     try {
-      print('Fetching schedule...');
       final apiService = ApiService("${dotenv.env['API_URL']}/examlist");
+      print('lỗi');
       final List<ExamModel> examData = await apiService.fetchDataList<
           List<ExamModel>>((json) => ExamModel.examModelFromJson(json));
+      print('API URL: ${dotenv.env['API_URL']}/examlist');
+      print(examData[0]);
       if (mounted) {
         setState(() {
           scheduleData = examData;
           isLoading = false;
           DateTime monday = weekDates.first;
           DateTime sunday = weekDates.last;
-          print('Monday: $monday');
-          print('Sunday: $sunday');
-          print('Schedule Data: $scheduleData');
+      
           scheduleData = (scheduleData ?? []).where((item) {
             DateTime sessionDate = DateTime.parse(item.date);
-            print('Session Date: $sessionDate');
             return sessionDate.isAfter(monday.subtract(Duration(days: 1))) &&
                 sessionDate.isBefore(sunday.add(Duration(days: 1)));
           }).toList();
-          print('Number of sessions after filtering: ${(scheduleData ?? [])
-              .length}');
-          if ((scheduleData ?? []).isEmpty) {
-            print('No sessions found for the current week.');
-          }
           (scheduleData ?? []).sort((a, b) =>
               DateTime.parse(a.date).compareTo(DateTime.parse(b.date)));
         });

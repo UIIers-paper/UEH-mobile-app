@@ -38,7 +38,7 @@ class UserService {
         Map<String, dynamic> deviceData = await getDeviceInformation();
         String logId = DateTime.now().millisecondsSinceEpoch.toString();
         await saveLogId(logId);
-        print("Log ID: $logId");
+        // print("Log ID: $logId");
         await FirebaseFirestore.instance.collection('user_logs').doc(logId).set({
           'log_id': logId,
           'user_id': userId,
@@ -55,8 +55,8 @@ class UserService {
             'is_physical_device': deviceData['isPhysicalDevice'],
           }
         });
-        print(deviceId);
-        print("Thông tin người dùng đã được lưu!");
+        // print(deviceId);
+        // print("Thông tin người dùng đã được lưu!");
       } else {
         print("Người dùng chưa đăng nhập.");
       }
@@ -72,7 +72,7 @@ class UserService {
       if (userId == null) return;
       final localDb = LocalDatabase();
       await localDb.insertLog(userId, violationType);
-      print("Log đã được ghi cục bộ: $violationType");
+      // print("Log đã được ghi cục bộ: $violationType");
     } catch (e) {
       print("Lỗi khi ghi log cục bộ: $e");
     }
@@ -105,7 +105,7 @@ class UserService {
 
       if (syncedLogIds.isNotEmpty) {
         await localDb.markLogsAsSynced(syncedLogIds);
-        print("Đồng bộ thành công: ${syncedLogIds.length} log.");
+        // print("Đồng bộ thành công: ${syncedLogIds.length} log.");
       }
     } catch (e) {
       print("Lỗi khi đồng bộ log: $e");

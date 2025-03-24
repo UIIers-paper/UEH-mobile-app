@@ -1,7 +1,8 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:ueh_mobile_app/configs/routes.dart';
-
+import 'package:ueh_mobile_app/screens/student/pages/exam_loading_screen.dart';
+import 'package:ueh_mobile_app/screens/student/pages/exam_screen.dart';
 class ExamCard extends StatelessWidget {
   final String classId;
   final String classCodeName;
@@ -42,12 +43,17 @@ class ExamCard extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
       child: GestureDetector(
         onTap: () {
-          Navigator.pushNamed(
+          print('Class ID: $classId');
+          
+          Navigator.push(
             context,
-            isDownloaded ? AppRoutes.examScreen : AppRoutes.examLoadScreen,
-            arguments: classId,
+            MaterialPageRoute(
+              builder: (context) => isDownloaded ?  ExamScreen() : const ExamLoadingScreen(),
+              settings: RouteSettings(arguments: classId),
+            ),
           );
         },
+
         child: Container(
           decoration: BoxDecoration(
             gradient: LinearGradient(

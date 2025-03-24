@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:ueh_mobile_app/configs/routes.dart';
 import 'package:ueh_mobile_app/models/exam_model.dart';
+import 'package:ueh_mobile_app/screens/student/pages/exam_screen.dart';
 import 'package:ueh_mobile_app/services/api_service.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:ueh_mobile_app/database/local_database.dart';
@@ -37,14 +37,19 @@ class _ExamLoadingScreenState extends State<ExamLoadingScreen> with SingleTicker
   Future<void> _loadExamData(String examId) async {
     try {
       final apiService = ApiService("${dotenv.env['API_URL']}/exams/${examId}");
-      print("Fetching data from: ${dotenv.env['API_URL']}/exams");
-      final List<ExamModel> examData = await apiService.fetchDataList<List<ExamModel>>((json) => ExamModel.examModelFromJson(json));
-      final filedata= await _examStorage.saveEncryptedExam(examId, examData[0].content!);
+      final ExamContentModel examData = await apiService.fetchData(((json) => ExamContentModel.fromJson(json)));
+      final filedata= await _examStorage.saveEncryptedExam(examId, examData.content!);
       final fileBytes = await filedata.readAsBytes();
       await _db.saveEncryptedFile(examId, fileBytes);
-      Future.delayed(const Duration(seconds: 1), () {
+      Future.delayed(const Duration(seconds: 3), () {
         if (mounted) {
-          Navigator.pushReplacementNamed(context, AppRoutes.examScreen);
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) =>   ExamScreen(),
+              settings: RouteSettings(arguments: examId),
+            ),
+          );
         }
       });
     } catch (e) {
@@ -56,12 +61,18 @@ class _ExamLoadingScreenState extends State<ExamLoadingScreen> with SingleTicker
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    
-    final args = ModalRoute.of(context)?.settings.arguments;
-    if (args is String) {
-      examId = args;
-      _loadExamData(examId); 
-    }
+  
+    Future.microtask(() {
+      final args = ModalRoute.of(context)?.settings.arguments;
+      if (args is String) {
+        setState(() {
+          examId = args;
+        });
+        _loadExamData(examId);
+      } else {
+        print("Arguments is not a String or is null");
+      }
+    });
   }
 
 

@@ -12,6 +12,7 @@ class ExamListScreen extends StatefulWidget {
 
 class _ExamListScreenState extends State<ExamListScreen> {
   final NetworkService networkService = NetworkService();
+  final ExamRepository examRepository = ExamRepository();
   List<ExamModel>? _examData;
   bool _isLoading = true;
   // late StudentModel student;
@@ -26,19 +27,16 @@ class _ExamListScreenState extends State<ExamListScreen> {
 
   Future<void> _fetchData() async {
     try {
-      final apiService = ApiService("${dotenv.env['API_URL']}/exams");
-      print("tới bước này");
-      print("${dotenv.env['API_URL']}/exams");
+      final apiService = ApiService("${dotenv.env['API_URL']}/examlist");
       final List<ExamModel> examData = await apiService.fetchDataList<List<ExamModel>>((json) => ExamModel.examModelFromJson(json));
-      final examRepository = ExamRepository();
       final List<ExamModel> exam_Data = await examRepository.fetchExamsWithFileStatus(examData);
-
       setState(() {
         _examData = exam_Data;
         _isLoading = false;
       });
     } catch (e) {
       setState(() => _isLoading = false);
+      print('báo lỗi');
       print('Error: $e');
     }
   }

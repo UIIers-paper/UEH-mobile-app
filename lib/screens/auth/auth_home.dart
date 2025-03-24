@@ -72,7 +72,6 @@ class _HomeScreenState extends State<AuthHome> {
                               // Button for Login with Email
                               InkWell(
                                 onTap: () {
-                                  print("Login with Email");
                                   Navigator.pushReplacementNamed(
                                       context, AppRoutes.formLogin);
                                 },

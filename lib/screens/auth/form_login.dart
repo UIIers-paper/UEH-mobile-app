@@ -123,7 +123,6 @@ class _LoginScreenState extends State<FormLogin> {
 
   void _signInWithGoogle(BuildContext context) async {
     try {
-      print("login with google");
       User? user = await _authService.signInWithGoogle();
       await _authService.saveUserAuthentication(user, context);
       await _userLog.logUserInfo();

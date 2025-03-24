@@ -83,15 +83,12 @@ class AuthService {
 
   Future<User?> signInWithGoogle() async {
     try {
-      print('google ....');
       final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
 
       if (googleUser == null) {
         return null;
       }
-
       final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
-      print('google ....');
       if (googleAuth.accessToken == null || googleAuth.idToken == null) {
         return null;
       }

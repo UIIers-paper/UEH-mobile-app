@@ -44,10 +44,8 @@ class _ExamWaitScreenState extends State<ExamWaitScreen> {
 
   void _handleNetworkChange(bool isConnected) async {
     if (isConnected) {
-      print("WiFi is enabled");
       await _syncLogsToFirebase();
     } else {
-      print("WiFi is disabled");
        SchedulerBinding.instance.addPostFrameCallback((_) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(

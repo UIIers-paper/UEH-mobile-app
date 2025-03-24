@@ -10,7 +10,6 @@ class ExamModel {
   int limitTime;
   String date;
   int duration;
-  String? content;
   bool isSaved = false;
 
   ExamModel({
@@ -25,26 +24,25 @@ class ExamModel {
     required this.limitTime,
     required this.date,
     required this.duration,
-    this.content,
     this.isSaved = false,
   });
 
   factory ExamModel.fromJson(Map<String, dynamic> json) {
-    return ExamModel(
-      examId: json['examId'],
-      teacherName: json['teacherName'],
-      courseName: json['courseName'],
-      subject: json['subject'],
-      dateTime: DateTime.tryParse(json['dateTime'])!,
-      startTime: json['startTime'],
-      endTime: json['endTime'],
-      questionNumbers: json['questionNumbers'],
-      limitTime: json['limitTime'],
-      date: json['date'],
-      duration: json['duration'],
-      content: json['content'] as String?,
-    );
-  }
+  return ExamModel(
+    examId: json['examId'] as String,
+    teacherName: json['teacherName'] as String,
+    courseName: json['courseName'] as String,
+    subject: json['subject'] as String,
+    dateTime: DateTime.tryParse(json['datetime'] as String)!,
+    startTime: json['startTime'] as String,
+    endTime: json['endTime'] as String,
+    questionNumbers: json['questionNumbers'] as int,
+    limitTime: json['limitTime'] as int,
+    date: json['date'] as String,
+    duration: json['duration'] as int,
+    isSaved: json['isSaved'] as bool? ?? false,
+  );
+}
 
   static List<ExamModel> examModelFromJson(List<dynamic> jsonList) {
     return jsonList
@@ -66,8 +64,30 @@ class ExamModel {
       'limitTime': limitTime,
       'date': date,
       'duration': duration,
-      'content': content ?? '',
     };
   }
 }
 
+class ExamContentModel {
+  final String examId;
+  final String? content;
+
+  ExamContentModel({
+    required this.examId,
+    this.content,
+  });
+
+  factory ExamContentModel.fromJson(Map<String, dynamic> json) {
+    return ExamContentModel(
+      examId: json['id'] as String,
+      content: json['content'] as String?,
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': examId,
+      'content': content ?? '',
+    };
+  }
+}

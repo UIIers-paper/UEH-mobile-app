@@ -62,7 +62,6 @@ class ForgotPassword extends StatelessWidget {
               child: ElevatedButton(
                 onPressed: () {
                   String emailOrPhone = emailController.text;
-                  print("Submitted: $emailOrPhone");
                   String email = emailController.text.trim();
                   _authService.sendPasswordResetEmail(email, context);
                 },

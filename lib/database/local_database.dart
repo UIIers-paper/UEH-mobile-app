@@ -163,12 +163,12 @@ class LocalDatabase {
     final result = await db.query(
       'exam_table',
       columns: ['file_data'],
-      where: 'examId = ?',
+      where: 'exam_id = ?',
       whereArgs: [examId],
     );
 
     if (result.isNotEmpty) {
-      final file = result.first['file'];
+      final file = result.first['file_data'];
       return file != null;
     }
 

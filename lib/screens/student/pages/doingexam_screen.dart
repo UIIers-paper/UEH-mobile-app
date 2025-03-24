@@ -58,7 +58,6 @@ class _DoingExamScreenState extends State<DoingExamScreen> with WidgetsBindingOb
         throw Exception("Không tìm thấy file HTML trong cơ sở dữ liệu");
       }
     } catch (e) {
-      print("Error loading HTML content: $e");
       setState(() {
         _isLoading = false; 
       });
@@ -77,7 +76,6 @@ class _DoingExamScreenState extends State<DoingExamScreen> with WidgetsBindingOb
 
   void _lockExam(String error) {
     if (isSubmitted) return;
-    print("vi phạm");
     _userLog.recordViolation(error);
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(

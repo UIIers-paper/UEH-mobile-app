@@ -11,14 +11,9 @@ class ExamScreen extends StatefulWidget {
 
 class _ExamScreenState extends State<ExamScreen> {
   final NetworkService networkService = NetworkService();
-  // late StudentModel student;
+
   void _doExercise(bool isInternetConnected, String examId) async {
-    print("Doing exercise...");
     bool isAirplaneModeEnabled = await networkService.isAirplaneModeEnabled();
-    print("Connection: ${await networkService.checkNetworkStatus()}");
-
-
-    print(isInternetConnected);
     if (isInternetConnected || !isAirplaneModeEnabled) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -28,7 +23,6 @@ class _ExamScreenState extends State<ExamScreen> {
         ),
       );
     } else {
-      print('thi');
       Navigator.push(
         context,
         MaterialPageRoute(
@@ -43,7 +37,6 @@ class _ExamScreenState extends State<ExamScreen> {
   }
 
   void _finishExercise() async {
-    print("Finish exercise...");
     Navigator.pushNamed(
       context,
       AppRoutes.waitingScreen,
@@ -56,7 +49,6 @@ class _ExamScreenState extends State<ExamScreen> {
   @override
   Widget build(BuildContext context) {
     final String examId = ModalRoute.of(context)?.settings.arguments as String;
-    print("examId: $examId");
     final isConnected =
         context.watch<NetworkStatusProvider>().isInternetConnected;
     return Scaffold(

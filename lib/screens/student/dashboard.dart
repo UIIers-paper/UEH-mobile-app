@@ -207,7 +207,7 @@ class _DashboardScreenState extends State<Dashboard> {
         animationDuration: Duration(milliseconds: 300),
         onTap: (index) async{
           var info= await userService.getDeviceInformation();
-          printData(info);
+          // printData(info);
           setState(() {
             _currentIndex = index;
             _bodyContent = _screens[_currentIndex];
