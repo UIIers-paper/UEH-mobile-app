@@ -2,7 +2,7 @@ import 'package:ueh_mobile_app/utils/exports.dart';
 import 'package:ueh_mobile_app/widgets/bottomAnswer_widget.dart';
 import 'package:ueh_mobile_app/widgets/localExam_widget.dart';
 import 'package:ueh_mobile_app/database/local_database.dart';
-
+import 'package:ueh_mobile_app/services/examstorage_service.dart';
 class DoingExamScreen extends StatefulWidget {
   final VoidCallback onFinish;
   final String examId;
@@ -15,7 +15,7 @@ class DoingExamScreen extends StatefulWidget {
 class _DoingExamScreenState extends State<DoingExamScreen> with WidgetsBindingObserver {
   final NetworkService networkService = NetworkService();
   final UserService _userLog = UserService();
-  Uint8List? _htmlContent;
+  String? _htmlContent;
   Map<int, String> savedAnswers = {};
   bool _isLoading = true;
   bool isBottomSheetOpen = false;
@@ -48,10 +48,16 @@ class _DoingExamScreenState extends State<DoingExamScreen> with WidgetsBindingOb
 
   Future<void> _loadHtmlContent() async {
     try {
-      Uint8List? htmlContent = await LocalDatabase().getEncryptedFile(widget.examId);
-      if (htmlContent != null) {
+      print("Loading HTML content");
+      Uint8List? encryptedContent = await LocalDatabase().getEncryptedFile(widget.examId);
+      String? base64Content = await ExamStorage().loadDecryptedExam(encryptedContent!);
+      print("HTML content loaded ${widget.examId}");
+      if (base64Content != null) {
+        final htmlBytes = base64Decode(base64Content);
+        final htmlString = utf8.decode(htmlBytes);
+        print("HTML Content: $htmlString");
         setState(() {
-          _htmlContent = htmlContent; 
+          _htmlContent = htmlString; 
           _isLoading = false; 
         });
       } else {

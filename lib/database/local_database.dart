@@ -96,7 +96,9 @@ class LocalDatabase {
     );
     if (result.isNotEmpty) {
       final data = result.first['file_data'];
+      print("Data loaded: $data");
       if (data is Uint8List) {
+        print("Data loaded: ${data.length}");
         return data;
       }
     }
@@ -140,8 +142,12 @@ class LocalDatabase {
       whereArgs: [examId],
     );
     if (result.isNotEmpty) {
-      String answersString = result.first['answers'] as String;
-      return _parseAnswers(answersString);
+      String? answersString = result.first['answers'] as String?;
+      if (answersString !=null){
+        return _parseAnswers(answersString);
+
+      }
+
     }
     return {};
   }

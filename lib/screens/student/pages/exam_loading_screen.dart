@@ -39,8 +39,7 @@ class _ExamLoadingScreenState extends State<ExamLoadingScreen> with SingleTicker
       final apiService = ApiService("${dotenv.env['API_URL']}/exams/${examId}");
       final ExamContentModel examData = await apiService.fetchData(((json) => ExamContentModel.fromJson(json)));
       final filedata= await _examStorage.saveEncryptedExam(examId, examData.content!);
-      final fileBytes = await filedata.readAsBytes();
-      await _db.saveEncryptedFile(examId, fileBytes);
+      await _db.saveEncryptedFile(examId, filedata);
       Future.delayed(const Duration(seconds: 3), () {
         if (mounted) {
           Navigator.push(
