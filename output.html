@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Đề Thi: Cấu Trúc Dữ Liệu và Giải Thuật</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            color: #000;
+            background: #fff;
+        }
+        .header, .footer {
+            text-align: center;
+            padding: 10px 0;
+            /* border-bottom: 1px solid #000; */
+        }
+        .footer {
+            border-top: 1px solid #000;
+            bottom: 20px;
+        }
+        .container {
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 10px;
+        }
+        .question {
+            margin-bottom: 20px;
+            padding: 10px;
+            /* border: 1px solid #000; */
+        }
+        h3 {
+            margin: 0 0 10px;
+            font-size: 16px;
+        }
+        ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        li {
+            margin: 5px 0;
+            padding: 5px 10px;
+            /* border: 1px solid #000; */
+            cursor: pointer;
+        }
+        textarea {
+            resize: none;
+            font-size: 14px;
+            border: 1px solid #000;
+            width: 100%;
+            padding: 5px;
+        }
+    </style>
+</head>
+<body>
+<div class="header">
+    <h1>Đề Thi: Cấu Trúc Dữ Liệu và Giải Thuật</h1>
+    <p>Thời gian làm bài: 90 phút</p>
+</div>
+
+<div class="container">
+    <div class="question">
+        <h3>Câu 1: Cấu trúc dữ liệu nào phù hợp nhất để thực hiện một hàng đợi ưu tiên?</h3>
+        <ul>
+            <li>A. Mảng</li>
+            <li>B. Danh sách liên kết</li>
+            <li>C. Heap</li>
+            <li>D. Cây nhị phân</li>
+        </ul>
+    </div>
+
+    <div class="question">
+        <h3>Câu 2: Thời gian thực thi của thuật toán tìm kiếm nhị phân là gì?</h3>
+        <ul>
+            <li>A. O(n)</li>
+            <li>B. O(log n)</li>
+            <li>C. O(n log n)</li>
+            <li>D. O(n<sup>2</sup>)</li>
+        </ul>
+    </div>
+
+    <div class="question">
+        <h3>Câu 3: Viết thuật toán để duyệt qua cây nhị phân theo thứ tự trước (Pre-order Traversal).</h3>
+        <img src="data:image/png;base64,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">
+        <textarea rows="6"></textarea>
+    </div>
+
+    <div class="question">
+        <h3>Câu 4: Phân tích độ phức tạp thời gian và không gian của thuật toán sắp xếp nhanh (QuickSort).</h3>
+        <textarea rows="6"></textarea>
+    </div>
+</div>
+
+<div class="footer">
+    <p>Chúc các bạn làm bài tốt!</p>
+</div>
+</body>
+</html>

@@ -66,12 +66,12 @@ class UserService {
   }
 
 
-  Future<void> recordViolation(String violationType) async {
+  Future<void> recordViolation(String violationType, String examId) async {
     try {
       String? userId = await getUserId();
       if (userId == null) return;
       final localDb = LocalDatabase();
-      await localDb.insertLog(userId, violationType);
+      await localDb.insertLog(userId, violationType, examId);
       // print("Log đã được ghi cục bộ: $violationType");
     } catch (e) {
       print("Lỗi khi ghi log cục bộ: $e");
@@ -111,6 +111,55 @@ class UserService {
       print("Lỗi khi đồng bộ log: $e");
     }
   }
+
+
+  // Future<void> syncLogsToFirebase() async {
+  //   try {
+  //     final localDb = LocalDatabase();
+  //     List<Map<String, dynamic>> unsyncedLogs = await localDb.getUnsyncedLogs();
+  //
+  //     if (unsyncedLogs.isEmpty) {
+  //       print("Không có log nào cần đồng bộ.");
+  //       return;
+  //     }
+  //     List<int> syncedLogIds = [];
+  //
+  //     for (var log in unsyncedLogs) {
+  //       try {
+  //         // Kiểm tra xem log có chứa exam_id không
+  //         String? examId = log['exam_id'];
+  //         if (examId == null || examId.isEmpty) {
+  //           print("Log không có exam_id: ${log['id']}");
+  //           continue;
+  //         }
+  //         Map<int, String> answers = await localDb.loadAnswers(examId);
+  //
+  //         if (answers.isEmpty) {
+  //           print("Không có câu trả lời nào cho exam_id: $examId");
+  //           continue;
+  //         }
+  //
+  //         await FirebaseFirestore.instance.collection('exam_answers').add({
+  //           'exam_id': examId,
+  //           'user_id': log['user_id'],
+  //           'answers': answers,
+  //           'timestamp': DateTime.now().toIso8601String(),
+  //         });
+  //
+  //         syncedLogIds.add(log['id']);
+  //       } catch (e) {
+  //         print("Lỗi khi đồng bộ log với exam_id: ${log['exam_id']} - $e");
+  //       }
+  //     }
+  //
+  //     if (syncedLogIds.isNotEmpty) {
+  //       await localDb.markLogsAsSynced(syncedLogIds);
+  //       print("Đồng bộ thành công: ${syncedLogIds.length} log(s).");
+  //     }
+  //   } catch (e) {
+  //     print("Lỗi tổng thể khi đồng bộ log: $e");
+  //   }
+  // }
 
 
   Future<void> updateLogoutTime() async {

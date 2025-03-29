@@ -51,12 +51,18 @@ class _DoingExamScreenState extends State<DoingExamScreen> with WidgetsBindingOb
       print("Loading HTML content");
       Uint8List? encryptedContent = await LocalDatabase().getEncryptedFile(widget.examId);
       String? base64Content = await ExamStorage().loadDecryptedExam(encryptedContent!);
-      print("HTML content loaded ${widget.examId}");
+      print("Base64 content loaded ${base64Content}");
+
       if (base64Content != null) {
         final htmlBytes = base64Decode(base64Content);
         final htmlString = utf8.decode(htmlBytes);
+
         print("HTML Content: $htmlString");
+        if (htmlString.isEmpty) {
+          throw Exception("Nội dung HTML không hợp lệ");
+        }
         setState(() {
+          print("thành công mọi thứ");
           _htmlContent = htmlString; 
           _isLoading = false; 
         });
@@ -82,7 +88,7 @@ class _DoingExamScreenState extends State<DoingExamScreen> with WidgetsBindingOb
 
   void _lockExam(String error) {
     if (isSubmitted) return;
-    _userLog.recordViolation(error);
+    _userLog.recordViolation(error, widget.examId);
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text('Bạn đã vi phạm quy chế thi'),
@@ -148,7 +154,7 @@ class _DoingExamScreenState extends State<DoingExamScreen> with WidgetsBindingOb
       ),
       body: Stack(
         children: [
-          LocalHtmlViewer(htmlContent: _htmlContent!),
+          LocalHtmlViewer(htmlContent: _htmlContent ?? "Nội dung không khả dụng"),
           Positioned(
             bottom: 16,
             right: 16,

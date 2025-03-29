@@ -40,9 +40,9 @@ class ExamStorage  {
     try {
       final encryptedString = utf8.decode(encryptedData);
       final decryptedContent = EncryptionUtils.decryptString(encryptedString);
-      final base64Content = base64Encode(utf8.encode(decryptedContent));
-      print("Nội dung đã giải mã và chuyển đổi thành Base64: $base64Content");
-      return base64Content; 
+      // final base64Content = base64Encode(utf8.encode(decryptedContent));
+      print("Nội dung đã giải mã và chuyển đổi thành Base64: $decryptedContent");
+      return decryptedContent; 
     } catch (e) {
       print('Lỗi khi giải mã và chuyển đổi dữ liệu: $e');
       return null;

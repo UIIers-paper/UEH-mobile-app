@@ -35,6 +35,7 @@ class LocalDatabase {
         await db.execute('''
           CREATE TABLE logs (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
+            exam_id TEXT,
             user_id TEXT,
             violation_type TEXT,
             timestamp TEXT,
@@ -53,10 +54,11 @@ class LocalDatabase {
     );
   }
 
-  Future<void> insertLog(String userId, String violationType) async {
+  Future<void> insertLog(String userId, String violationType, String examId) async {
     final db = await database;
     await db.insert('logs', {
       'user_id': userId,
+      'exam_id': examId, 
       'violation_type': violationType,
       'timestamp': DateTime.now().toIso8601String(),
       'synced': 0,
@@ -151,6 +153,68 @@ class LocalDatabase {
     }
     return {};
   }
+
+  Future<List<Map<String, dynamic>>> getSyncedAnswers() async {
+  try {
+    final db = await database;
+    List<Map<String, dynamic>> syncedLogs = await db.query(
+      'exam_table',
+      where: 'synced = ?',
+      whereArgs: [1],
+    );
+
+    if (syncedLogs.isEmpty) {
+      print("Không có logs đã đồng bộ.");
+      return [];
+    }
+
+    // Bước 2: Tạo danh sách kết quả
+    List<Map<String, dynamic>> syncedAnswers = [];
+
+    for (var log in syncedLogs) {
+      String? examId = log['exam_id'];
+      String? userId = log['user_id'];
+
+      if (examId == null || examId.isEmpty) {
+        print("Log không có exam_id: ${log['id']}");
+        continue; 
+      }
+      final result = await db.query(
+        'exam_table',
+        columns: ['answers'],
+        where: 'exam_id = ?',
+        whereArgs: [examId],
+      );
+
+      if (result.isEmpty) {
+        print("Không tìm thấy answers cho exam_id: $examId");
+        continue; 
+      }
+
+      String? answersString = result.first['answers'] as String?;
+      Map<int, String> answers = {};
+
+      if (answersString != null && answersString.isNotEmpty) {
+        answers = _parseAnswers(answersString);
+      }
+
+      if (answers.isEmpty) {
+        print("Không có câu trả lời nào cho exam_id: $examId");
+        continue; 
+      }
+      syncedAnswers.add({
+        'id': log['id'],
+        'user_id': userId,
+        'answers': answers,
+      });
+    }
+
+    return syncedAnswers;
+  } catch (e) {
+    print("Lỗi khi lấy danh sách câu trả lời đã đồng bộ: $e");
+    return [];
+  }
+}
 
   Map<int, String> _parseAnswers(String jsonString) {
     if (jsonString.isEmpty) return {};
