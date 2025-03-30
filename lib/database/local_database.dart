@@ -168,7 +168,6 @@ class LocalDatabase {
       return [];
     }
 
-    // Bước 2: Tạo danh sách kết quả
     List<Map<String, dynamic>> syncedAnswers = [];
 
     for (var log in syncedLogs) {
