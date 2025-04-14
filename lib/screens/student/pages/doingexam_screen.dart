@@ -20,7 +20,6 @@ class _DoingExamScreenState extends State<DoingExamScreen> with WidgetsBindingOb
   bool _isLoading = true;
   bool isBottomSheetOpen = false;
   int currentQuestionIndex = 0;
-  final List<String> questions = ["Câu hỏi 1", "Câu hỏi 2", "Câu hỏi 3"];
   bool isSubmitted = false;
 
   @override
@@ -48,21 +47,17 @@ class _DoingExamScreenState extends State<DoingExamScreen> with WidgetsBindingOb
 
   Future<void> _loadHtmlContent() async {
     try {
-      print("Loading HTML content");
       Uint8List? encryptedContent = await LocalDatabase().getEncryptedFile(widget.examId);
       String? base64Content = await ExamStorage().loadDecryptedExam(encryptedContent!);
-      print("Base64 content loaded ${base64Content}");
 
       if (base64Content != null) {
         final htmlBytes = base64Decode(base64Content);
         final htmlString = utf8.decode(htmlBytes);
 
-        print("HTML Content: $htmlString");
         if (htmlString.isEmpty) {
           throw Exception("Nội dung HTML không hợp lệ");
         }
         setState(() {
-          print("thành công mọi thứ");
           _htmlContent = htmlString; 
           _isLoading = false; 
         });
@@ -115,7 +110,7 @@ class _DoingExamScreenState extends State<DoingExamScreen> with WidgetsBindingOb
             setState(() {
               savedAnswers[questionIndex] = answer;
             });
-            await LocalDatabase().saveAnswer(widget.examId, questionIndex, answer);
+            await _userLog.recordAnswer(widget.examId, questionIndex, answer);
           },
           onClose: () {
             setState(() {

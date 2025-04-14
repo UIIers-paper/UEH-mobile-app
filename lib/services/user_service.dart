@@ -78,21 +78,38 @@ class UserService {
     }
   }
 
+  Future<void> recordAnswer(String examId, int questionIndex, String answer) async {
+    try {
+      String? userId = await getUserId();
+      if (userId == null) return;
+      final localDb = LocalDatabase();
+      await localDb.saveAnswer(examId, questionIndex, answer, userId);
+      // print("Log đã được ghi cục bộ: $violationType");
+    } catch (e) {
+      print("Lỗi khi ghi log cục bộ: $e");
+    }
+  }
+
+
 
   Future<void> syncLogsToFirebase() async {
     try {
+      final syncedLogIds = <int>[];
+      final syncedExamIds = <String>[];
       final localDb = LocalDatabase();
+      final firestore = FirebaseFirestore.instance;
       List<Map<String, dynamic>> unsyncedLogs = await localDb.getUnsyncedLogs();
+      List<Map<String, dynamic>> examAnswers = await localDb.getSyncedAnswers();
 
-      if (unsyncedLogs.isEmpty) {
+      if (unsyncedLogs.isEmpty && examAnswers.isEmpty) {
         print("Không có log nào cần đồng bộ.");
         return;
       }
 
-      List<int> syncedLogIds = [];
+
       for (var log in unsyncedLogs) {
         try {
-          await FirebaseFirestore.instance.collection('exam_violations').add({
+          await firestore.collection('exam_violations').add({
             'user_id': log['user_id'],
             'violation_type': log['violation_type'],
             'timestamp': log['timestamp'],
@@ -102,10 +119,26 @@ class UserService {
           print("Lỗi khi đồng bộ log: $e");
         }
       }
-
+      for (var answerEntry in examAnswers) {
+        try {
+          await firestore.collection('exam').add({
+            'id': answerEntry['id'],
+            'exam_id': answerEntry['exam_id'],
+            'student_id': answerEntry['user_id'],
+            'answer': answerEntry['answers'],
+          });
+          syncedExamIds.add(answerEntry['exam_id']);
+          print("Đã đồng bộ câu trả lời cho exam_id: ${answerEntry['exam_id']}");
+        } catch (e) {
+          print("Lỗi khi đồng bộ câu trả lời: $e");
+        }
+      }
       if (syncedLogIds.isNotEmpty) {
         await localDb.markLogsAsSynced(syncedLogIds);
-        // print("Đồng bộ thành công: ${syncedLogIds.length} log.");
+      }
+
+      if (syncedExamIds.isNotEmpty) {
+        await localDb.markAnswersAsSynced(syncedExamIds);
       }
     } catch (e) {
       print("Lỗi khi đồng bộ log: $e");
@@ -113,55 +146,7 @@ class UserService {
   }
 
 
-  // Future<void> syncLogsToFirebase() async {
-  //   try {
-  //     final localDb = LocalDatabase();
-  //     List<Map<String, dynamic>> unsyncedLogs = await localDb.getUnsyncedLogs();
-  //
-  //     if (unsyncedLogs.isEmpty) {
-  //       print("Không có log nào cần đồng bộ.");
-  //       return;
-  //     }
-  //     List<int> syncedLogIds = [];
-  //
-  //     for (var log in unsyncedLogs) {
-  //       try {
-  //         // Kiểm tra xem log có chứa exam_id không
-  //         String? examId = log['exam_id'];
-  //         if (examId == null || examId.isEmpty) {
-  //           print("Log không có exam_id: ${log['id']}");
-  //           continue;
-  //         }
-  //         Map<int, String> answers = await localDb.loadAnswers(examId);
-  //
-  //         if (answers.isEmpty) {
-  //           print("Không có câu trả lời nào cho exam_id: $examId");
-  //           continue;
-  //         }
-  //
-  //         await FirebaseFirestore.instance.collection('exam_answers').add({
-  //           'exam_id': examId,
-  //           'user_id': log['user_id'],
-  //           'answers': answers,
-  //           'timestamp': DateTime.now().toIso8601String(),
-  //         });
-  //
-  //         syncedLogIds.add(log['id']);
-  //       } catch (e) {
-  //         print("Lỗi khi đồng bộ log với exam_id: ${log['exam_id']} - $e");
-  //       }
-  //     }
-  //
-  //     if (syncedLogIds.isNotEmpty) {
-  //       await localDb.markLogsAsSynced(syncedLogIds);
-  //       print("Đồng bộ thành công: ${syncedLogIds.length} log(s).");
-  //     }
-  //   } catch (e) {
-  //     print("Lỗi tổng thể khi đồng bộ log: $e");
-  //   }
-  // }
-
-
+  
   Future<void> updateLogoutTime() async {
     try {
       String? logId = await getLogId();

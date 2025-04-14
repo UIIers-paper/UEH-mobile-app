@@ -53,7 +53,6 @@ class _ExamLoadingScreenState extends State<ExamLoadingScreen> with SingleTicker
       });
     } catch (e) {
       setState(() => _isLoading = false);
-      print('Error: $e');
     }
   }
 

@@ -29,7 +29,7 @@ class _ExamScreenState extends State<ExamScreen> {
           builder: (context) =>
               DoingExamScreen(
                 onFinish: _finishExercise,
-                examId: examId
+                examId: examId,
               ),
         ),
       );

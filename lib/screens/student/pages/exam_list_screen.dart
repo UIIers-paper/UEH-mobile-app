@@ -36,8 +36,6 @@ class _ExamListScreenState extends State<ExamListScreen> {
       });
     } catch (e) {
       setState(() => _isLoading = false);
-      print('báo lỗi');
-      print('Error: $e');
     }
   }
 

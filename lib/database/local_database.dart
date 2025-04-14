@@ -47,7 +47,9 @@ class LocalDatabase {
           CREATE TABLE exam_table (
             exam_id TEXT PRIMARY KEY,
             file_data BLOB,
-            answers TEXT
+            user_id TEXT,
+            answers TEXT,
+            synced INTEGER DEFAULT 0
           )
         ''');
       },
@@ -109,7 +111,7 @@ class LocalDatabase {
 
 
 
-  Future<void> saveAnswer(String examId, int questionIndex, String answer) async {
+  Future<void> saveAnswer(String examId, int questionIndex, String answer, String userId) async {
     final db = await database;
     final result = await db.query(
       'exam_table',
@@ -118,22 +120,31 @@ class LocalDatabase {
       whereArgs: [examId],
     );
 
-    Map<int, String> answers = {};
+    // Map<int, String> answers = {};
 
-    if (result.isNotEmpty) {
-      final String storedAnswers = result.first['answers'] as String;
-      answers = _parseAnswers(storedAnswers);
-    }
+    final answers = result.isNotEmpty
+      ? _parseAnswers(result.first['answers'] as String)
+      : <int, String>{};
+
     answers[questionIndex] = answer;
 
-    await db.insert(
+    final data = {
+    'exam_id': examId,
+    'answers': answers,
+    'user_id': userId,
+    'synced': 0,
+  };
+
+  if (result.isNotEmpty) {
+    await db.update(
       'exam_table',
-      {
-        'exam_id': examId,
-        'answers': jsonEncode(answers),
-      },
-      conflictAlgorithm: ConflictAlgorithm.replace,
+      data,
+      where: 'exam_id = ?',
+      whereArgs: [examId],
     );
+  } else {
+    await db.insert('exam_table', data);
+  }
   }
 
   Future<Map<int, String>> loadAnswers(String examId) async {
@@ -203,6 +214,7 @@ class LocalDatabase {
       }
       syncedAnswers.add({
         'id': log['id'],
+        'exam_id': examId,
         'user_id': userId,
         'answers': answers,
       });
@@ -214,6 +226,12 @@ class LocalDatabase {
     return [];
   }
 }
+
+  Future<void> markAnswersAsSynced(List<String> examIds) async {
+    final db = await database;
+    final ids = examIds.map((id) => "'$id'").join(", ");
+    await db.rawUpdate("UPDATE exam_table SET synced = 1 WHERE exam_id IN ($ids)");
+  }
 
   Map<int, String> _parseAnswers(String jsonString) {
     if (jsonString.isEmpty) return {};
