@@ -111,7 +111,7 @@ class LocalDatabase {
 
 
 
-  Future<void> saveAnswer(String examId, int questionIndex, String answer, String userId) async {
+  Future<void> saveAnswer(String examId, int questionIndex, String answer) async {
     final db = await database;
     final result = await db.query(
       'exam_table',
@@ -120,34 +120,51 @@ class LocalDatabase {
       whereArgs: [examId],
     );
 
+    print("Result: $result");
+
     // Map<int, String> answers = {};
 
     final answers = result.isNotEmpty
-      ? _parseAnswers(result.first['answers'] as String)
-      : <int, String>{};
+    ? _parseAnswers(result.first['answers']?.toString() ?? "")
+    : <String, String>{};
 
-    answers[questionIndex] = answer;
+    print("Answers: $answers");
 
-    final data = {
-    'exam_id': examId,
-    'answers': answers,
-    'user_id': userId,
-    'synced': 0,
-  };
+    answers[questionIndex.toString()] = answer;
+    print("Before encoding: $answers");
+    final convertedAnswers = answers.map((key, value) => MapEntry(key.toString(), value));
+    print("After conversion: $convertedAnswers");
+    try {
+      final answersJson = jsonEncode(convertedAnswers);
+      print("Encoded JSON: $answersJson");
+      final data = {
+        'exam_id': examId,
+        'answers': answersJson,
+        'synced': 0,
+      };
 
-  if (result.isNotEmpty) {
-    await db.update(
-      'exam_table',
-      data,
-      where: 'exam_id = ?',
-      whereArgs: [examId],
-    );
-  } else {
-    await db.insert('exam_table', data);
+      if (result.isNotEmpty) {
+        print("Updating existing record");
+        await db.update(
+          'exam_table',
+          data,
+          where: 'exam_id = ?',
+          whereArgs: [examId],
+        );
+      } else {
+        print("Inserting new record");
+        await db.insert('exam_table', data);
+      }
+    } catch (e) {
+      print("Error during encoding: $e");
+    }
+
+    print("Updated Answers: $answers");
+
+
   }
-  }
 
-  Future<Map<int, String>> loadAnswers(String examId) async {
+  Future<Map<String, String>> loadAnswers(String examId) async {
     final db = await database;
     final result = await db.query(
       'exam_table',
@@ -165,25 +182,25 @@ class LocalDatabase {
     return {};
   }
 
-  Future<List<Map<String, dynamic>>> getSyncedAnswers() async {
+  Future<List<Map<String, dynamic>>> getUnsyncedAnswers(String? user_id) async {
   try {
     final db = await database;
-    List<Map<String, dynamic>> syncedLogs = await db.query(
+    List<Map<String, dynamic>> unsyncedLogs = await db.query(
       'exam_table',
       where: 'synced = ?',
-      whereArgs: [1],
+      whereArgs: [0],
     );
 
-    if (syncedLogs.isEmpty) {
-      print("Không có logs đã đồng bộ.");
+    if (unsyncedLogs.isEmpty) {
+      print("Không có logs chưa đồng bộ.");
       return [];
     }
 
-    List<Map<String, dynamic>> syncedAnswers = [];
+    List<Map<String, dynamic>> unsyncedAnswers = [];
 
-    for (var log in syncedLogs) {
+    for (var log in unsyncedLogs) {
       String? examId = log['exam_id'];
-      String? userId = log['user_id'];
+      String? userId = user_id;
 
       if (examId == null || examId.isEmpty) {
         print("Log không có exam_id: ${log['id']}");
@@ -202,7 +219,7 @@ class LocalDatabase {
       }
 
       String? answersString = result.first['answers'] as String?;
-      Map<int, String> answers = {};
+      Map<String, String> answers = {};
 
       if (answersString != null && answersString.isNotEmpty) {
         answers = _parseAnswers(answersString);
@@ -212,15 +229,14 @@ class LocalDatabase {
         print("Không có câu trả lời nào cho exam_id: $examId");
         continue; 
       }
-      syncedAnswers.add({
-        'id': log['id'],
+      unsyncedAnswers.add({
         'exam_id': examId,
         'user_id': userId,
         'answers': answers,
       });
     }
 
-    return syncedAnswers;
+    return unsyncedAnswers;
   } catch (e) {
     print("Lỗi khi lấy danh sách câu trả lời đã đồng bộ: $e");
     return [];
@@ -233,11 +249,11 @@ class LocalDatabase {
     await db.rawUpdate("UPDATE exam_table SET synced = 1 WHERE exam_id IN ($ids)");
   }
 
-  Map<int, String> _parseAnswers(String jsonString) {
+  Map<String, String> _parseAnswers(String jsonString) {
     if (jsonString.isEmpty) return {};
     try {
       Map<String, dynamic> decoded = jsonDecode(jsonString);
-      return decoded.map<int, String>((key, value) => MapEntry(int.parse(key), value.toString()));
+      return decoded.map<String, String>((key, value) => MapEntry(key, value.toString()));
     } catch (e) {
       print("Error parsing answers: $e");
       return {};

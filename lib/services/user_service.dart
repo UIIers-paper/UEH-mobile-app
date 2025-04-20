@@ -5,6 +5,7 @@ import 'package:mobile_device_identifier/mobile_device_identifier.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:ueh_mobile_app/database/local_database.dart';
 import 'dart:io';
+import 'dart:convert';
 
 class UserService {
   Future<String?> getUserId() async {
@@ -83,8 +84,8 @@ class UserService {
       String? userId = await getUserId();
       if (userId == null) return;
       final localDb = LocalDatabase();
-      await localDb.saveAnswer(examId, questionIndex, answer, userId);
-      // print("Log đã được ghi cục bộ: $violationType");
+      print("Log đã được ghi cục bộ: $examId, $questionIndex, $answer");
+      await localDb.saveAnswer(examId, questionIndex, answer);
     } catch (e) {
       print("Lỗi khi ghi log cục bộ: $e");
     }
@@ -97,10 +98,13 @@ class UserService {
       final syncedLogIds = <int>[];
       final syncedExamIds = <String>[];
       final localDb = LocalDatabase();
+      String? userId = await getUserId();
       final firestore = FirebaseFirestore.instance;
+      print('Đang đồng bộ hóa log lên Firebase...');
       List<Map<String, dynamic>> unsyncedLogs = await localDb.getUnsyncedLogs();
-      List<Map<String, dynamic>> examAnswers = await localDb.getSyncedAnswers();
-
+      List<Map<String, dynamic>> examAnswers = await localDb.getUnsyncedAnswers(userId);
+      print("Số lượng log chưa đồng bộ: ${unsyncedLogs.length}");
+      print("Số lượng câu trả lời chưa đồng bộ: ${examAnswers.length}");
       if (unsyncedLogs.isEmpty && examAnswers.isEmpty) {
         print("Không có log nào cần đồng bộ.");
         return;
@@ -121,8 +125,8 @@ class UserService {
       }
       for (var answerEntry in examAnswers) {
         try {
+          print("Đang đồng bộ hóa câu trả lời lên Firebase... $answerEntry" );
           await firestore.collection('exam').add({
-            'id': answerEntry['id'],
             'exam_id': answerEntry['exam_id'],
             'student_id': answerEntry['user_id'],
             'answer': answerEntry['answers'],

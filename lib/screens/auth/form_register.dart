@@ -31,17 +31,6 @@ class _RegisterScreenState extends State<FormRegister> {
               ),
               SizedBox(height: 40),
               TextField(
-                controller: _nameController,
-                decoration: InputDecoration(
-                  hintText: 'Name',
-                  prefixIcon: Icon(Icons.person, color: Colors.blue),
-                  border: UnderlineInputBorder(
-                    borderSide: BorderSide(color: Colors.blue),
-                  ),
-                ),
-              ),
-              SizedBox(height: 20),
-              TextField(
                 controller: _emailController,
                 decoration: InputDecoration(
                   hintText: 'Email ID',
@@ -54,9 +43,20 @@ class _RegisterScreenState extends State<FormRegister> {
               SizedBox(height: 20),
               TextField(
                 controller: _passwordController,
-                obscureText: true,
                 decoration: InputDecoration(
                   hintText: 'Password',
+                  prefixIcon: Icon(Icons.lock, color: Colors.blue),
+                  border: UnderlineInputBorder(
+                    borderSide: BorderSide(color: Colors.blue),
+                  ),
+                ),
+              ),
+              SizedBox(height: 20),
+              TextField(
+                controller: _passwordController,
+                obscureText: true,
+                decoration: InputDecoration(
+                  hintText: 'Confirmed Password',
                   prefixIcon: Icon(Icons.lock, color: Colors.blue),
                   border: UnderlineInputBorder(
                     borderSide: BorderSide(color: Colors.blue),
@@ -105,7 +105,6 @@ class _RegisterScreenState extends State<FormRegister> {
 
   @override
   void dispose() {
-    _nameController.dispose();
     _emailController.dispose();
     _passwordController.dispose();
     super.dispose();

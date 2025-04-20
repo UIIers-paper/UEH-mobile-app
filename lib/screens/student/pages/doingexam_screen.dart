@@ -16,7 +16,7 @@ class _DoingExamScreenState extends State<DoingExamScreen> with WidgetsBindingOb
   final NetworkService networkService = NetworkService();
   final UserService _userLog = UserService();
   String? _htmlContent;
-  Map<int, String> savedAnswers = {};
+  Map<String, String> savedAnswers = {};
   bool _isLoading = true;
   bool isBottomSheetOpen = false;
   int currentQuestionIndex = 0;
@@ -38,7 +38,7 @@ class _DoingExamScreenState extends State<DoingExamScreen> with WidgetsBindingOb
   }
 
   Future<void> _loadSavedAnswers() async {
-    Map<int, String> answers = await LocalDatabase().loadAnswers(widget.examId);
+    Map<String, String> answers = await LocalDatabase().loadAnswers(widget.examId);
     setState(() {
       savedAnswers = answers;
     });
@@ -108,8 +108,9 @@ class _DoingExamScreenState extends State<DoingExamScreen> with WidgetsBindingOb
           savedAnswers: savedAnswers,
           onAnswerChanged: (questionIndex, answer) async {
             setState(() {
-              savedAnswers[questionIndex] = answer;
+              savedAnswers[questionIndex.toString()] = answer;
             });
+            print("Đã ghi câu trả lời: $questionIndex - $answer");
             await _userLog.recordAnswer(widget.examId, questionIndex, answer);
           },
           onClose: () {

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 class BottomAnswerWidget extends StatefulWidget {
   final int currentQuestionIndex;
-  final Map<int, String> savedAnswers;
+  final Map<String, String> savedAnswers;
   final Function(int, String) onAnswerChanged;
   final VoidCallback onClose;
   final int numberOfQuestions;
@@ -70,7 +70,7 @@ class _BottomAnswerWidgetState extends State<BottomAnswerWidget> {
                       Wrap(
                         spacing: 10,
                         children: answerOptions.map((option) {
-                          bool isSelected = widget.savedAnswers[questionNumber] == option;
+                          bool isSelected = widget.savedAnswers[questionNumber.toString()] == option;
                           return ChoiceChip(
                             label: Text(option),
                             selected: isSelected,
