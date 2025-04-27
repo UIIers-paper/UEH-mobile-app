@@ -1,5 +1,3 @@
-import 'package:ueh_mobile_app/configs/routes.dart';
-
 import 'package:ueh_mobile_app/utils/exports.dart';
 import 'package:ueh_mobile_app/widgets/socialButton_widget.dart';
 
@@ -123,9 +121,7 @@ class _LoginScreenState extends State<FormLogin> {
 
   void _signInWithGoogle(BuildContext context) async {
     try {
-      User? user = await _authService.signInWithGoogle();
-      await _authService.saveUserAuthentication(user, context);
-      await _userLog.logUserInfo();
+    
     } catch (e) {
       print("Verification failed: $e");
     }
@@ -133,9 +129,7 @@ class _LoginScreenState extends State<FormLogin> {
 
   void _signInWithMicrosoft(BuildContext context) async {
     try {
-      User? user = await _authService.signInWithMicrosoft();
-      await _authService.saveUserAuthentication(user, context);
-      await _userLog.logUserInfo();
+      
     } catch (e) {
       print("Verification failed: $e");
     }

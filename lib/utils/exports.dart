@@ -33,6 +33,7 @@ export 'package:ueh_mobile_app/services/auth_service.dart';
 export 'package:ueh_mobile_app/services/network_service.dart';
 export 'package:ueh_mobile_app/utils/code_refector.dart';
 export 'package:ueh_mobile_app/configs/routes.dart';
+export 'package:ueh_mobile_app/configs/api_constants.dart';
 
 export 'appColors.dart';
 

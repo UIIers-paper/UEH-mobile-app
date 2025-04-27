@@ -6,17 +6,10 @@ class PhoneLoginPage extends StatefulWidget {
 }
 
 class _PhoneLoginPageState extends State<PhoneLoginPage> {
-  final AuthService _authService = AuthService();
-  String _verificationId = '';
-  String _smsCode = '';
-  String _phoneNumber = '';
+
 
   void _sendCode() async {
-    await _authService.signInWithPhone(_phoneNumber, (verificationId) {
-      setState(() {
-        _verificationId = verificationId;
-      });
-    });
+   
   }
 
 
@@ -31,7 +24,6 @@ class _PhoneLoginPageState extends State<PhoneLoginPage> {
           children: [
             TextField(
               decoration: InputDecoration(labelText: "Phone Number"),
-              onChanged: (value) => _phoneNumber = value,
             ),
             SizedBox(height: 20),
             ElevatedButton(
@@ -41,15 +33,11 @@ class _PhoneLoginPageState extends State<PhoneLoginPage> {
             SizedBox(height: 20),
             TextField(
               decoration: InputDecoration(labelText: "OTP Code"),
-              onChanged: (value) => _smsCode = value,
             ),
             SizedBox(height: 20),
             ElevatedButton(
               onPressed: () async {
-              _authService.verifyPhoneCode(
-                  verificationId: _verificationId,
-                  smsCode: _smsCode,
-                  context: context);
+            
               },
               child: Text("Verify and Login"),
             ),
