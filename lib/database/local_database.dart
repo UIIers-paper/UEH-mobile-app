@@ -122,8 +122,6 @@ class LocalDatabase {
 
     print("Result: $result");
 
-    // Map<int, String> answers = {};
-
     final answers = result.isNotEmpty
     ? _parseAnswers(result.first['answers']?.toString() ?? "")
     : <String, String>{};
