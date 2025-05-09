@@ -1,27 +1,40 @@
 import 'package:ueh_mobile_app/utils/exports.dart';
 import 'package:ueh_mobile_app/models/auth_response.dart';
 import 'package:http/http.dart' as http;
-
+import 'package:http/io_client.dart';
 class AuthService {
   final FlutterSecureStorage _storage = FlutterSecureStorage();
+  final client = IOClient(HttpClient()
+    ..badCertificateCallback = (cert, host, port) => true);
   
 
   Future<void> registerWithEmailAndPassword({
-    required String name,
     required String email,
     required String password,
+    required String confirmPassword,
     required BuildContext context,
   }) async {
     try {
-      final response = await http.post(
+      print(jsonEncode({
+        'email': email,
+        'password': password,
+        'confirmPassword': confirmPassword
+
+      }));
+      print(ApiConstants.registerEndpoint);
+      print('${ApiConstants.baseUrl}/api/Auth/register');
+
+      final response = await client.post(
         Uri.parse(ApiConstants.registerEndpoint),
         headers: {'Content-Type': 'application/json'},
         body: jsonEncode({
-          'name': name,
           'email': email,
           'password': password,
+          'confirmPassword': confirmPassword
+
         }),
       );
+      print(response.statusCode);
 
       if (response.statusCode == 200) {
         final authResponse = AuthResponse.fromJson(jsonDecode(response.body));

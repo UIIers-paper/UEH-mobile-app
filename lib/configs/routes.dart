@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:ueh_mobile_app/screens/auth/form_login.dart';
 import 'package:ueh_mobile_app/screens/auth/forgot_password.dart';
 import 'package:ueh_mobile_app/screens/auth/reset_password.dart';
-// import 'package:ueh_mobile_app/widgets/welcome.dart';
+import 'package:ueh_mobile_app/widgets/welcome.dart';
 import 'package:ueh_mobile_app/screens/auth/auth_home.dart';
 import 'package:ueh_mobile_app/screens/auth/form_register.dart';
 import 'package:ueh_mobile_app/screens/student/dashboard.dart';
@@ -31,8 +31,8 @@ class AppRoutes {
 
   static Route<dynamic> generateRoute(RouteSettings settings) {
     switch (settings.name) {
-      // case welcomeHome:
-      //   return MaterialPageRoute(builder: (_) => WelcomeScreen());
+      case welcomeHome:
+        return MaterialPageRoute(builder: (_) => WelcomeScreen());
       case authHome:
         return MaterialPageRoute(builder: (_) => AuthHome());
       case formRegister:

@@ -6,9 +6,9 @@ class FormRegister extends StatefulWidget {
 }
 
 class _RegisterScreenState extends State<FormRegister> {
-  final _nameController = TextEditingController();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
+  final _confirmPasswordController = TextEditingController();
   final AuthService _authService = AuthService();
   final GlobalKey<ScaffoldMessengerState> _scaffoldMessengerKey = GlobalKey<ScaffoldMessengerState>();
 
@@ -53,7 +53,7 @@ class _RegisterScreenState extends State<FormRegister> {
               ),
               SizedBox(height: 20),
               TextField(
-                controller: _passwordController,
+                controller: _confirmPasswordController,
                 obscureText: true,
                 decoration: InputDecoration(
                   hintText: 'Confirmed Password',
@@ -67,9 +67,9 @@ class _RegisterScreenState extends State<FormRegister> {
               ElevatedButton(
                 onPressed: () async {
                   await _authService.registerWithEmailAndPassword(
-                    name: _nameController.text.trim(),
                     email: _emailController.text.trim(),
                     password: _passwordController.text.trim(),
+                    confirmPassword: _passwordController.text.trim(),
                     context: context,
                   );
                 },
