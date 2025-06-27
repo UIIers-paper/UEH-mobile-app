@@ -4,6 +4,7 @@ import 'package:http/http.dart' as http;
 import 'package:http/io_client.dart';
 class AuthService {
   final FlutterSecureStorage _storage = FlutterSecureStorage();
+  // Lên production thì ko được xài nữa, chỉ xài cho môi trường dev
   final client = IOClient(HttpClient()
     ..badCertificateCallback = (cert, host, port) => true);
   
@@ -58,7 +59,7 @@ class AuthService {
     required BuildContext context,
   }) async {
     try {
-      final response = await http.post(
+      final response = await client.post(
         Uri.parse(ApiConstants.loginEndpoint),
         headers: {'Content-Type': 'application/json'},
         body: jsonEncode({
@@ -68,6 +69,7 @@ class AuthService {
       );
 
       if (response.statusCode == 200) {
+        print("Login response: ${response.body}");
         final authResponse = AuthResponse.fromJson(jsonDecode(response.body));
         await _storage.write(key: 'token', value: authResponse.token);
         Navigator.pushReplacementNamed(context, AppRoutes.dashboardScreen);

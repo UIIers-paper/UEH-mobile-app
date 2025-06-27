@@ -47,8 +47,9 @@ class _DashboardScreenState extends State<Dashboard> {
 
   Future<void> _fetchData() async {
     try {
-      final apiService = ApiService("${dotenv.env['API_URL']}/students/3122102001");
+      final apiService = ApiService("${dotenv.env['SERVER_URL']}/api/ThongTinSinhVien/1");
       final StudentModel studentData = await apiService.fetchData(((json) => StudentModel.fromJson(json)));
+      print(studentData);
       setState(() {
         _student = studentData;
         _isLoading = false;
@@ -105,7 +106,7 @@ class _DashboardScreenState extends State<Dashboard> {
               },
               child: CircleAvatar(
                 radius: 20,
-                backgroundImage: AssetImage(_student?.imageUrl ?? "student.imageUrl"),
+                backgroundImage: AssetImage(_student?.imageUrl ?? "assets/images/profile.png"),
               ),
             ),
             SizedBox(width: 12),
