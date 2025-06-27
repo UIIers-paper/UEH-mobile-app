@@ -6,10 +6,10 @@ import 'package:ueh_mobile_app/widgets/welcome.dart';
 import 'package:ueh_mobile_app/screens/auth/auth_home.dart';
 import 'package:ueh_mobile_app/screens/auth/form_register.dart';
 import 'package:ueh_mobile_app/screens/student/dashboard.dart';
-// import 'package:ueh_mobile_app/screens/student/pages/error_screen.dart';
-// import 'package:ueh_mobile_app/screens/student/pages/exam_wait_screen.dart';
-// import 'package:ueh_mobile_app/screens/student/pages/exam_screen.dart';
-// import 'package:ueh_mobile_app/screens/student/pages/exam_loading_screen.dart';
+import 'package:ueh_mobile_app/screens/student/pages/error_screen.dart';
+import 'package:ueh_mobile_app/screens/student/pages/exam_wait_screen.dart';
+import 'package:ueh_mobile_app/screens/student/pages/exam_screen.dart';
+import 'package:ueh_mobile_app/screens/student/pages/exam_loading_screen.dart';
 
 class AppRoutes {
   static const String welcomeHome = '/welcome';
@@ -45,14 +45,14 @@ class AppRoutes {
         return MaterialPageRoute(builder: (_) => ResetPassword());
       case dashboardScreen:
         return MaterialPageRoute(builder: (_) => Dashboard());
-      // case errorScreen:
-      //   return MaterialPageRoute(builder: (_) => ErrorScreen());
-      // case examScreen:
-      //   return MaterialPageRoute(builder: (_) => ExamScreen());
-      // case examLoadScreen:
-      //   return MaterialPageRoute(builder: (_) => ExamLoadingScreen());
-      // case waitingScreen:
-      //   return MaterialPageRoute(builder: (_) => ExamWaitScreen());
+      case errorScreen:
+        return MaterialPageRoute(builder: (_) => ErrorScreen());
+      case examScreen:
+        return MaterialPageRoute(builder: (_) => ExamScreen());
+      case examLoadScreen:
+        return MaterialPageRoute(builder: (_) => ExamLoadingScreen());
+      case waitingScreen:
+        return MaterialPageRoute(builder: (_) => ExamWaitScreen());
       case "/":
         return MaterialPageRoute(builder: (_) => AuthHome());
       default:
