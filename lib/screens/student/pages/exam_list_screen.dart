@@ -28,7 +28,9 @@ class _ExamListScreenState extends State<ExamListScreen> {
   Future<void> _fetchData() async {
     try {
       final apiService = ApiService("${dotenv.env['SERVER_URL']}/api/LuotThi/studentId?mssv=${6351071017}");
-      final List<ExamModel> examData = await apiService.fetchDataList<List<ExamModel>>((json) => ExamModel.examModelFromJson(json));
+      final List<ExamModel> examData = await apiService.fetchDataList<List<ExamModel>>(
+            (json) => ExamModel.examModelFromJson(json),
+      );
       final List<ExamModel> exam_Data = await examRepository.fetchExamsWithFileStatus(examData);
       setState(() {
         _examData = exam_Data;
@@ -108,9 +110,9 @@ Widget _buildDaySection(String day, List<ExamModel> exams) {
       ),
       for (var examItem in exams)
         ExamCard(
-          classId: examItem.examId,
-          classCodeName: examItem.teacherName,
-          className: examItem.courseName,
+          classId: examItem.room,
+          classCodeName: examItem.displayName,
+          className: examItem.examName,
           dayTime: examItem.date,
           isDownloaded: examItem.isSaved,
         ),

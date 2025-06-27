@@ -1,72 +1,81 @@
 class ExamModel {
-  String examId;
-  String teacherName;
-  String courseName;
-  String subject;
-  DateTime dateTime;
-  String startTime;
-  String endTime;
-  int questionNumbers;
-  int limitTime;
-  String date;
-  int duration;
-  bool isSaved = false;
+  final int id;
+  final String examCode;
+  final String displayName;
+  final String room;
+  final DateTime examDateTime;
+  final String date;
+  final String examName;
+  final int timeLimit;
+  final DateTime? startAt;
+  final DateTime? finishAt;
+  final int status;
+  bool isSaved;
 
   ExamModel({
-    required this.examId,
-    required this.teacherName,
-    required this.courseName,
-    required this.subject,
-    required this.dateTime,
-    required this.startTime,
-    required this.endTime,
-    required this.questionNumbers,
-    required this.limitTime,
+    required this.id,
+    required this.examCode,
+    required this.displayName,
+    required this.room,
+    required this.examDateTime,
     required this.date,
-    required this.duration,
+    required this.examName,
+    required this.timeLimit,
+    this.startAt,
+    this.finishAt,
+    required this.status,
     this.isSaved = false,
   });
 
   factory ExamModel.fromJson(Map<String, dynamic> json) {
-  return ExamModel(
-    examId: json['examId'] as String,
-    teacherName: json['teacherName'] as String,
-    courseName: json['courseName'] as String,
-    subject: json['subject'] as String,
-    dateTime: DateTime.tryParse(json['datetime'] as String)!,
-    startTime: json['startTime'] as String,
-    endTime: json['endTime'] as String,
-    questionNumbers: json['questionNumbers'] as int,
-    limitTime: json['limitTime'] as int,
-    date: json['date'] as String,
-    duration: json['duration'] as int,
-    isSaved: json['isSaved'] as bool? ?? false,
-  );
-}
+    final ttCaThi = json['ttCaThi'] ?? {};
+    final ttDeThi = json['ttDeThi'] ?? {};
+    final DateTime examDateTime = DateTime.parse(ttCaThi['ngayGioBatDau']);
+
+    final String formattedDate = "${examDateTime.day.toString().padLeft(2, '0')}/"
+        "${examDateTime.month.toString().padLeft(2, '0')}/"
+        "${examDateTime.year}";
+
+    return ExamModel(
+      id: json['id'] as int,
+      examCode: ttCaThi['maCaThi'] ?? '',
+      displayName: ttCaThi['tenHienThi'] ?? '',
+      room: ttCaThi['phongThi'] ?? '',
+      examDateTime: examDateTime,
+      date: formattedDate,
+      examName: ttDeThi['name'] ?? '',
+      timeLimit: ttDeThi['timeLimit'] ?? 0,
+      startAt: json['startAt'] != null ? DateTime.tryParse(json['startAt']) : null,
+      finishAt: json['finishAt'] != null ? DateTime.tryParse(json['finishAt']) : null,
+      status: json['status'] ?? 0,
+    );
+  }
+
 
   static List<ExamModel> examModelFromJson(List<dynamic> jsonList) {
     return jsonList
-        .where((json) => json is Map<String, dynamic>)
+        .whereType<Map<String, dynamic>>()
         .map((json) => ExamModel.fromJson(json))
         .toList();
   }
 
   Map<String, dynamic> toJson() {
     return {
-      'examId': examId,
-      'teacherName': teacherName,
-      'courseName': courseName,
-      'subject': subject,
-      'dateTime': dateTime.toIso8601String(),
-      'startTime': startTime,
-      'endTime': endTime,
-      'questionNumbers': questionNumbers,
-      'limitTime': limitTime,
-      'date': date,
-      'duration': duration,
+      'id': id,
+      'examCode': examCode,
+      'displayName': displayName,
+      'room': room,
+      'examDateTime': examDateTime.toIso8601String(),
+      'examName': examName,
+      'timeLimit': timeLimit,
+      'startAt': startAt?.toIso8601String(),
+      'finishAt': finishAt?.toIso8601String(),
+      'status': status,
+      'isSaved': isSaved,
     };
   }
 }
+
 
 class ExamContentModel {
   final String examId;
