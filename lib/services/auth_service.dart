@@ -4,6 +4,7 @@ import 'package:http/http.dart' as http;
 import 'package:http/io_client.dart';
 class AuthService {
   final FlutterSecureStorage _storage = FlutterSecureStorage();
+  // Lên production thì ko được xài nữa, chỉ xài cho môi trường dev
   final client = IOClient(HttpClient()
     ..badCertificateCallback = (cert, host, port) => true);
   
@@ -37,8 +38,8 @@ class AuthService {
       print(response.statusCode);
 
       if (response.statusCode == 200) {
-        // final authResponse = AuthResponse.fromJson(jsonDecode(response.body));
-        // await _storage.write(key: 'token', value: authResponse.token);
+        final authResponse = AuthResponse.fromJson(jsonDecode(response.body));
+        await _storage.write(key: 'token', value: authResponse.token);
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text("Đăng ký thành công!")),
         );
@@ -58,10 +59,6 @@ class AuthService {
     required BuildContext context,
   }) async {
     try {
-      print(jsonEncode({
-        'email': email,
-        'password': password,
-      }));
       final response = await client.post(
         Uri.parse(ApiConstants.loginEndpoint),
         headers: {'Content-Type': 'application/json'},
@@ -70,7 +67,6 @@ class AuthService {
           'password': password,
         }),
       );
-      print(response.body);
 
       if (response.statusCode == 200) {
         final authResponse = AuthResponse.fromJson(jsonDecode(response.body));
@@ -83,7 +79,6 @@ class AuthService {
         throw Exception('Đăng nhập thất bại: ${jsonDecode(response.body)['message']}');
       }
     } catch (e) {
-      print(e);
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text("Đăng nhập thất bại: ${e.toString()}")),
       );
@@ -92,7 +87,7 @@ class AuthService {
 
   Future<void> sendPasswordResetEmail(String email, BuildContext context) async {
     try {
-      final response = await client.post(
+      final response = await http.post(
         Uri.parse('${ApiConstants.baseUrl}/auth/reset-password'),
         headers: {'Content-Type': 'application/json'},
         body: jsonEncode({'email': email}),
