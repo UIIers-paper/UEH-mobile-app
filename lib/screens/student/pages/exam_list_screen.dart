@@ -27,7 +27,7 @@ class _ExamListScreenState extends State<ExamListScreen> {
 
   Future<void> _fetchData() async {
     try {
-      final apiService = ApiService("${dotenv.env['API_URL']}/examlist");
+      final apiService = ApiService("${dotenv.env['SERVER_URL']}/api/LuotThi/studentId?mssv=${6351071017}");
       final List<ExamModel> examData = await apiService.fetchDataList<List<ExamModel>>((json) => ExamModel.examModelFromJson(json));
       final List<ExamModel> exam_Data = await examRepository.fetchExamsWithFileStatus(examData);
       setState(() {
