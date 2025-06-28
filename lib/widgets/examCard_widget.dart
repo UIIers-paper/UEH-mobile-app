@@ -1,9 +1,13 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
+import 'package:ueh_mobile_app/utils/exports.dart';
 // import 'package:ueh_mobile_app/configs/routes.dart';
 import 'package:ueh_mobile_app/screens/student/pages/exam_loading_screen.dart';
 import 'package:ueh_mobile_app/screens/student/pages/exam_screen.dart';
+import 'package:ueh_mobile_app/services/api_service.dart';
+
 class ExamCard extends StatelessWidget {
+  final int examId;
   final String classId;
   final String classCodeName;
   final String className;
@@ -12,6 +16,7 @@ class ExamCard extends StatelessWidget {
 
   ExamCard({
     Key? key,
+    required this.examId,
     required this.classId,
     required this.classCodeName,
     required this.className,
@@ -42,17 +47,100 @@ class ExamCard extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
       child: GestureDetector(
-        onTap: () {
-          print('Class ID: $classId');
-          
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => isDownloaded ?  ExamScreen() : const ExamLoadingScreen(),
-              settings: RouteSettings(arguments: classId),
-            ),
+        onTap: () async {
+          String? studentId;
+          String? password;
+          bool isAuthenticated = false;
+          Map<String, dynamic>? result;
+
+          await showDialog(
+            context: context,
+            barrierDismissible: false,
+            builder: (context) {
+              final idController = TextEditingController();
+              final passwordController = TextEditingController();
+              final formKey = GlobalKey<FormState>();
+
+              return AlertDialog(
+                title: Text('Xác thực sinh viên'),
+                content: Form(
+                  key: formKey,
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      TextFormField(
+                        controller: idController,
+                        decoration: InputDecoration(labelText: 'Mã số sinh viên'),
+                        validator: (value) =>
+                        value == null || value.isEmpty ? 'Không được để trống' : null,
+                      ),
+                      TextFormField(
+                        controller: passwordController,
+                        obscureText: true,
+                        decoration: InputDecoration(labelText: 'Mật khẩu'),
+                        validator: (value) =>
+                        value == null || value.isEmpty ? 'Không được để trống' : null,
+                      ),
+                    ],
+                  ),
+                ),
+                actions: [
+                  TextButton(
+                    onPressed: () => Navigator.of(context).pop(),
+                    child: Text('Hủy'),
+                  ),
+                  ElevatedButton(
+                    onPressed: () async {
+                      if (formKey.currentState!.validate()) {
+                        studentId = idController.text.trim();
+                        password = passwordController.text.trim();
+
+                        final apiService = ApiService('${dotenv.env['SERVER_URL']}/api/DeThi/access');
+
+                        try {
+                          result = await apiService.getWithQueryParams<Map<String, dynamic>>(
+                            {
+                              'LuotThiId': examId.toString(),
+                              'Mssv': studentId!,
+                              'Password': password!,
+                            },
+                                (json) => json,
+                          );
+                          isAuthenticated = true;
+                          Navigator.of(context).pop();
+                        } catch (e) {
+                          print('Lỗi xác thực: $e');
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(content: Text('Sai thông tin đăng nhập hoặc lỗi kết nối')),
+                          );
+                        }
+                      }
+                    },
+                    child: Text('Xác nhận'),
+                  ),
+                ],
+              );
+            },
           );
+
+          if (isAuthenticated) {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => isDownloaded
+                    ? ExamScreen()
+                    : ExamLoadingScreen(
+                  examId: examId,
+                  examData: {
+                    'content': result!['content'],
+                    'questionNums': result!['questionNums'],
+                  },
+                ),
+              ),
+            );
+          }
         },
+
 
         child: Container(
           decoration: BoxDecoration(

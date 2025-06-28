@@ -80,16 +80,19 @@ class ExamModel {
 class ExamContentModel {
   final String examId;
   final String? content;
+  final int questionNums;
 
   ExamContentModel({
     required this.examId,
     this.content,
+    this.questionNums = 0,
   });
 
   factory ExamContentModel.fromJson(Map<String, dynamic> json) {
     return ExamContentModel(
       examId: json['id'] as String,
       content: json['content'] as String?,
+      questionNums: json['questionNums'] as int? ?? 0,
     );
   }
 
@@ -97,6 +100,7 @@ class ExamContentModel {
     return {
       'id': examId,
       'content': content ?? '',
+      'questionNums': questionNums,
     };
   }
 }

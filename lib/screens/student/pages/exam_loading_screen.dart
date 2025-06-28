@@ -6,7 +6,15 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:ueh_mobile_app/database/local_database.dart';
 import 'package:ueh_mobile_app/services/examstorage_service.dart';
 class ExamLoadingScreen extends StatefulWidget {
-  const ExamLoadingScreen({Key? key}) : super(key: key);
+  final int examId;
+  final Map<String, dynamic> examData;
+
+  const ExamLoadingScreen({
+    Key? key,
+    required this.examId,
+    required this.examData,
+  }) : super(key: key);
+
 
   @override
   _ExamLoadingScreenState createState() => _ExamLoadingScreenState();
@@ -17,7 +25,6 @@ class _ExamLoadingScreenState extends State<ExamLoadingScreen> with SingleTicker
   final ExamStorage _examStorage = ExamStorage();
   late AnimationController _controller;
   late Animation<double> _animation;
-  late String examId;
   bool _isLoading = true;
 
   @override
@@ -29,7 +36,34 @@ class _ExamLoadingScreenState extends State<ExamLoadingScreen> with SingleTicker
     )..repeat();
 
     _animation = Tween<double>(begin: 0, end: 1).animate(_controller);
+    _prepareExam(widget.examData);
 
+  }
+
+  Future<void> _prepareExam(Map<String, dynamic> examData) async {
+    try {
+      final String content = examData['content'];
+
+      // Lưu mã hoá đề thi
+      final encrypted = await _examStorage.saveEncryptedExam(widget.examId.toString(), content);
+      await _db.saveEncryptedFile(widget.examId.toString(), encrypted);
+      Future.delayed(const Duration(seconds: 3), () {
+        if (mounted) {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) =>   ExamScreen(),
+              settings: RouteSettings(arguments: widget.examId.toString()),
+            ),
+          );
+        }
+      });
+
+
+    } catch (e) {
+      print('Lỗi xử lý đề thi: $e');
+      setState(() => _isLoading = false);
+    }
   }
 
   
@@ -56,22 +90,22 @@ class _ExamLoadingScreenState extends State<ExamLoadingScreen> with SingleTicker
     }
   }
 
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-  
-    Future.microtask(() {
-      final args = ModalRoute.of(context)?.settings.arguments;
-      if (args is String) {
-        setState(() {
-          examId = args;
-        });
-        _loadExamData(examId);
-      } else {
-        print("Arguments is not a String or is null");
-      }
-    });
-  }
+  // @override
+  // void didChangeDependencies() {
+  //   super.didChangeDependencies();
+  //
+  //   Future.microtask(() {
+  //     final args = ModalRoute.of(context)?.settings.arguments;
+  //     if (args is String) {
+  //       setState(() {
+  //         examId = args;
+  //       });
+  //       _loadExamData(widget.examId.toString());
+  //     } else {
+  //       print("Arguments is not a String or is null");
+  //     }
+  //   });
+  // }
 
 
   @override

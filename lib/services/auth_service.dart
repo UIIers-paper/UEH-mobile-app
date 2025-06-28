@@ -1,13 +1,11 @@
 import 'package:ueh_mobile_app/utils/exports.dart';
 import 'package:ueh_mobile_app/models/auth_response.dart';
 import 'package:http/http.dart' as http;
-import 'package:http/io_client.dart';
+import 'package:ueh_mobile_app/configs/api_constants.dart';
+
 class AuthService {
   final FlutterSecureStorage _storage = FlutterSecureStorage();
-  // Lên production thì ko được xài nữa, chỉ xài cho môi trường dev
-  final client = IOClient(HttpClient()
-    ..badCertificateCallback = (cert, host, port) => true);
-  
+
 
   Future<void> registerWithEmailAndPassword({
     required String email,
@@ -25,7 +23,7 @@ class AuthService {
       print(ApiConstants.registerEndpoint);
       print('${ApiConstants.baseUrl}/api/Auth/register');
 
-      final response = await client.post(
+      final response = await ApiConstants.client.post(
         Uri.parse(ApiConstants.registerEndpoint),
         headers: {'Content-Type': 'application/json'},
         body: jsonEncode({
@@ -59,7 +57,7 @@ class AuthService {
     required BuildContext context,
   }) async {
     try {
-      final response = await client.post(
+      final response = await ApiConstants.client.post(
         Uri.parse(ApiConstants.loginEndpoint),
         headers: {'Content-Type': 'application/json'},
         body: jsonEncode({

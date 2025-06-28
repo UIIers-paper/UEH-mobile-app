@@ -6,7 +6,7 @@ class ExamRepository {
 
   Future<List<ExamModel>> fetchExamsWithFileStatus(List<ExamModel> exams) async {
     for (var exam in exams) {
-      final hasFile = await _dbHelper.checkIsSaved(exam.examCode);
+      final hasFile = await _dbHelper.checkIsSaved(exam.id.toString());
       exam.isSaved = hasFile;
     }
 

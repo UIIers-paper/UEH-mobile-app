@@ -27,10 +27,12 @@ class _ExamListScreenState extends State<ExamListScreen> {
 
   Future<void> _fetchData() async {
     try {
-      final apiService = ApiService("${dotenv.env['SERVER_URL']}/api/LuotThi/studentId?mssv=${6351071017}");
-      final List<ExamModel> examData = await apiService.fetchDataList<List<ExamModel>>(
-            (json) => ExamModel.examModelFromJson(json),
+      final apiService = ApiService("https://10.0.2.2:7054/api/LuotThi/studentId");
+      final examData = await apiService.getListWithQueryParams<ExamModel>(
+        {'mssv': '6351071017'},
+            (json) => ExamModel.fromJson(json),
       );
+
       final List<ExamModel> exam_Data = await examRepository.fetchExamsWithFileStatus(examData);
       setState(() {
         _examData = exam_Data;
@@ -45,7 +47,7 @@ class _ExamListScreenState extends State<ExamListScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final List<ExamModel> examList = _examData ?? mockExams;
+    final List<ExamModel> examList = _examData ?? [];
     Map<String, List<ExamModel>> classesByDay = {};
     examList.sort((a, b) => a.date.compareTo(b.date));
     for (var examItem in examList) {
@@ -108,14 +110,17 @@ Widget _buildDaySection(String day, List<ExamModel> exams) {
           ],
         ),
       ),
-      for (var examItem in exams)
-        ExamCard(
+      ...exams.map((examItem) {
+        print('➡️ ID: ${examItem.id}, Tên: ${examItem.examName}');
+        return ExamCard(
+          examId: examItem.id,
           classId: examItem.room,
           classCodeName: examItem.displayName,
           className: examItem.examName,
           dayTime: examItem.date,
           isDownloaded: examItem.isSaved,
-        ),
+        );
+      }).toList(),
     ],
   );
 }

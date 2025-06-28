@@ -49,8 +49,8 @@ class AppRoutes {
         return MaterialPageRoute(builder: (_) => ErrorScreen());
       case examScreen:
         return MaterialPageRoute(builder: (_) => ExamScreen());
-      case examLoadScreen:
-        return MaterialPageRoute(builder: (_) => ExamLoadingScreen());
+      // case examLoadScreen:
+      //   return MaterialPageRoute(builder: (_) => ExamLoadingScreen());
       case waitingScreen:
         return MaterialPageRoute(builder: (_) => ExamWaitScreen());
       case "/":
