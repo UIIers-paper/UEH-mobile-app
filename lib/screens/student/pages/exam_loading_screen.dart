@@ -45,8 +45,8 @@ class _ExamLoadingScreenState extends State<ExamLoadingScreen> with SingleTicker
       final String content = examData['content'];
 
       // Lưu mã hoá đề thi
-      final encrypted = await _examStorage.saveEncryptedExam(widget.examId.toString(), content);
-      await _db.saveEncryptedFile(widget.examId.toString(), encrypted);
+      // final encrypted = await _examStorage.saveEncryptedExam(widget.examId.toString(), content);
+      await _db.saveEncryptedFile(widget.examId.toString(), content);
       Future.delayed(const Duration(seconds: 3), () {
         if (mounted) {
           Navigator.push(
@@ -65,47 +65,6 @@ class _ExamLoadingScreenState extends State<ExamLoadingScreen> with SingleTicker
       setState(() => _isLoading = false);
     }
   }
-
-  
-
-  Future<void> _loadExamData(String examId) async {
-    try {
-      final apiService = ApiService("${dotenv.env['API_URL']}/exams/${examId}");
-      final ExamContentModel examData = await apiService.fetchData(((json) => ExamContentModel.fromJson(json)));
-      final filedata= await _examStorage.saveEncryptedExam(examId, examData.content!);
-      await _db.saveEncryptedFile(examId, filedata);
-      Future.delayed(const Duration(seconds: 3), () {
-        if (mounted) {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) =>   ExamScreen(),
-              settings: RouteSettings(arguments: examId),
-            ),
-          );
-        }
-      });
-    } catch (e) {
-      setState(() => _isLoading = false);
-    }
-  }
-
-  // @override
-  // void didChangeDependencies() {
-  //   super.didChangeDependencies();
-  //
-  //   Future.microtask(() {
-  //     final args = ModalRoute.of(context)?.settings.arguments;
-  //     if (args is String) {
-  //       setState(() {
-  //         examId = args;
-  //       });
-  //       _loadExamData(widget.examId.toString());
-  //     } else {
-  //       print("Arguments is not a String or is null");
-  //     }
-  //   });
-  // }
 
 
   @override

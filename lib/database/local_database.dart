@@ -78,13 +78,14 @@ class LocalDatabase {
   }
 
 
-  Future<void> saveEncryptedFile(String examId, Uint8List fileData) async {
+  Future<void> saveEncryptedFile(String examId, String base64String) async {
     final db = await database;
+    Uint8List decodedBytes = base64Decode(base64String);
     await db.insert(
       'exam_table',
       {
         'exam_id': examId,
-        'file_data': fileData,
+        'file_data': decodedBytes,
       },
       conflictAlgorithm: ConflictAlgorithm.replace,
     );
