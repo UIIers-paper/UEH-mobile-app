@@ -45,7 +45,7 @@ class ApiService {
       'accept': '*/*',
       if (token != null) 'Authorization': 'Bearer $token',
     };
-    final response = await ApiConstants.client.get(uri);
+    final response = await ApiConstants.client.get(uri, headers: headers);
 
     if (response.statusCode == 200) {
       final jsonData = json.decode(response.body);

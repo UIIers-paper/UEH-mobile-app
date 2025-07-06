@@ -35,9 +35,12 @@ class EncryptionUtils {
   static String decryptString(String encryptedText) {
     final key = getKey();
     final iv = getIV();
-    final parts = encryptedText.split(':');
-    if (parts.length != 2) throw Exception('Invalid encrypted format');
-    final encrypter = Encrypter(AES(key));
-    return encrypter.decrypt64(parts[1], iv: iv);
+    final encrypter = Encrypter(AES(key, mode: AESMode.cbc)); // đảm bảo mode CBC
+
+    final encryptedBytes = base64.decode(encryptedText); // decode từ base64 nhận từ server
+    final encrypted = Encrypted(encryptedBytes); // wrap lại
+
+    return encrypter.decrypt(encrypted, iv: iv); // giải mã với key + iv
   }
+
 }

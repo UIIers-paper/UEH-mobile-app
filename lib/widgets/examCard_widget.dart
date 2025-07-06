@@ -136,6 +136,9 @@ class ExamCard extends StatelessWidget {
                     'questionNums': result!['questionNums'],
                   },
                 ),
+                settings: isDownloaded
+                    ? RouteSettings(arguments: examId.toString())
+                    : null,
               ),
             );
           }
